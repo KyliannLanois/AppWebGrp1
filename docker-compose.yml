@@ -1,0 +1,43 @@
+services:
+  web:
+    image: php:8.2-apache
+    container_name: touiteur_app
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html/public
+    command: >
+      bash -c "docker-php-ext-install pdo pdo_mysql &&
+               sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf &&
+               sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf &&
+               apache2-foreground"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: touiteur_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: touiteur
+      MYSQL_USER: touiteur_user
+      MYSQL_PASSWORD: devpassword
+    ports:
+      - "3307:3306"    # <-- Changer 3306:3306 en 3307:3306
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: touiteur_pma
+    ports:
+      - "8085:80"
+    environment:
+      PMA_HOST: db
+
+volumes:
+  db_data:

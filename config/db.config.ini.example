@@ -1,0 +1,6 @@
+driver = mysql
+host = db
+database = touiteur
+username = touiteur_user
+password = devpassword
+charset = utf8mb4
