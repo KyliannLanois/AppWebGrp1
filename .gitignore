@@ -4,3 +4,34 @@
 !/public/uploads/.gitkeep
 .idea/
 .DS_Store
+# IntelliJ IDEA / PhpStorm project files
+# Ignore everything in .idea by default
+.idea/*
+
+# Share only project-wide, environment-agnostic settings
+!.idea/codeStyles/
+!.idea/encodings.xml
+!.idea/vcs.xml
+!.idea/modules.xml
+!.idea/*.iml
+
+# Datasource local storage ignored files
+dataSources.local.xml
+
+# Editor-based HTTP Client requests
+http-client.private.env.json
+rest-client.private.env.json
+
+# PHPUnit
+phpunit.xml
+
+# Composer
+vendor
+
+.php_cs.cache
+.phpunit.result.cache
+
+ReflectionData.json
+
+# Output of tests/StubsMigrator.php (per-version stub trees)
+versioned/
