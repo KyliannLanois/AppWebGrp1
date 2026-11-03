@@ -12,9 +12,13 @@ Quentin :
 TouiteRepository et Connection
 
 
-Personne 2 : 
 
-implémenter Dispatcher et Action.php (en abstrait)
+
+
+
+Thibaud : 
+
+implémenter Dispatcher voir si il marche et Action.php (en abstrait)
 Faire un touiteurRenderer (avec 2 modes un compact et un normal deja vu en cours)
 
 
