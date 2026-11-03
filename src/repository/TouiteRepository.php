@@ -48,4 +48,12 @@ class TouiteurRepository {
         return self::$instance;
     }
 
+
+    public function getPDO(): PDO {
+        return $this->pdo;
+    }
+
+
+
+
 }
