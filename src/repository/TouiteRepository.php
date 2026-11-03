@@ -6,10 +6,10 @@ namespace touiteur\repository;
 use Exception;
 use PDO;
 
-class TouiteurRepository {
+class TouiteRepository {
 
     private static ?array $config= null;
-    private static ?TouiteurRepository $instance=null;
+    private static ?TouiteRepository $instance=null;
     private PDO $pdo;
 
     public function __construct (){
@@ -41,9 +41,9 @@ class TouiteurRepository {
     }
 
 
-    public static function getInstance() : TouiteurRepository{
+    public static function getInstance() : TouiteRepository{
         if (self::$instance === null){
-            self::$instance = new TouiteurRepository();
+            self::$instance = new TouiteRepository();
         }
         return self::$instance;
     }
@@ -54,6 +54,19 @@ class TouiteurRepository {
     }
 
 
+    public function getAllTouites(): array{
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        u.id_user,u.nom_user,u.prenom_user,u.email_user,
+        i.chemin_img
+        FROM touite t
+        JOIN utilisateur u ON u.id_user = t.id_user
+        LEFT JOIN image i ON t.id_image = i.id_image
+        GROUP BY t.id_touite, t.texte_touite, t.date_touite,u.nom_user,u.prenom_user,u.email_user,i.chemin_img
+        ORDER BY t.date_touite DESC";
+
+        $stmt =     $this->pdo->query($sql);
+        return $stmt->fetchAll();
+    }  //TODO rajouter le systeme d'évaluation
 
 
 }
