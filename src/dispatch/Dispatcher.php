@@ -22,15 +22,16 @@ class Dispatcher
         return $this;
     }
 
-    public function run(): void
-    {
-        if (isset($this->actions[$this->action])) {
-            $classe = new $this->actions[$this->action]();
-            $this->renderPage($classe->execute());
-        } else {
-            $classe = new DefaultAction();
-            $this->renderPage($classe->execute());
+    public function run(): void {
+        if (!isset($this->actions[$this->action])) {
+            throw new \iutnc\deefy\exception\RouterException("Action '{$this->action}' not found"); //TODO routerException
         }
+
+        $class  = $this->actions[$this->action];
+        $action = new $class();
+        $html   = $action->execute();   // on récupère le HTML
+
+        $this->renderPage($html);       // c'est renderPage qui fait le echo
     }
 
     private function renderPage(string $html): void
