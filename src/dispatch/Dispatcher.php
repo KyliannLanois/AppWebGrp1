@@ -1,6 +1,6 @@
 <?php
 
-namespace src\dispatch;
+namespace touiteur\dispatch;
 
 use src\action\Action;
 

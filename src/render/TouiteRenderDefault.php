@@ -1,6 +1,6 @@
 <?php
 
-namespace touiter\render;
+namespace touiteur\render;
 
 use touiteur\render\Renderer;
 
