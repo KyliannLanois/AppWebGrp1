@@ -5,32 +5,37 @@ namespace touiteur\render;
 
 class TouiteRendererCompact extends TouiteRendererDefault{
 
-    public function renderCompact($touite){
+    public function render(int $selector = 1):string{
+        return $this->renderCompact();
+    }
 
-        //TODO modifier en fonction de la base de données et ecrire le code pour raccourcire le texte du touite
+    public function renderCompact(): string{
+
+        $id = $this->touite->getIdTouite();
+        $texte =htmlspecialchars($this->touite->getContenu());
+        $auteurObj = $this->touite->getAuteur();
+        $nomAuteur = $auteurObj->getNom();
+        $auteur = htmlspecialchars($nomAuteur);
+
+        //$score=$this->touite->getScore(); //TODO faire le score
 
         return <<<HTML
-    <div class="touiteCompact">
-        <div class="touite-header">
-          
-            <div class="user-info">
-                <span class="username">Username</span>
-                <span class="handle">@handle</span>
+        <article class="touite-card touite-compact">
+            <div class="touite-header">
+                <strong>{$auteur}</strong>
             </div>
-        </div>
-        <div class="touite-content">
-            <p>This is a sample touite content. It can contain text, images, or other media.</p>
-        </div>
-        
-        </div>
-
-    </div>
-    HTML;
-    }
+            <p class="touite-content">{$texte}</p>
+            <div class="touite-footer">
+                
+                <a href="?action=display-touite&id={$id}">Voir le détail</a>
+            </div>
+        </article>
+HTML;
+    } // TODO a rajouter ça <span>Score : {$score}</span> |
 
     public function renderLong(): string
     {
-        return (new TouiteRendererLong($this->touite))->renderLong();
+        return $this->renderCompact();
     }
 
 }

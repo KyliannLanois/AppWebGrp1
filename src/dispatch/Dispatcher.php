@@ -3,14 +3,14 @@
 namespace touiteur\dispatch;
 
 use touiteur\exception\RouterException;
-use touiteur\action\Action;
+use src\action\Action;
 
 
 
 class Dispatcher
 {
     protected ?string $action = null;
-    protected array $actions = [];
+    protected $actions = [];
 
     public function __construct()
     {
@@ -49,6 +49,7 @@ class Dispatcher
             <h1>Touiteur</h1>
             <nav>
             <a href="?action=default">MenuPrincipal</a>
+            <a href="?action=add-touite">Ajouter touites</a>
             <a href="?action=menuAdmin">Menu Admin</a>
             <a href="?action=connexion">Connexion</a>
            </nav>
