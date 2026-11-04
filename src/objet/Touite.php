@@ -9,11 +9,11 @@ class Touite
     private Auteur $auteur;
     private string $date;
     private string $contenu;
-    private string $image;
+    private ?string $image;
 
-    private array $tags;
+    private ?array $tags;
 
-    public function __construct(int $id_touite,Auteur $auteur, string $date, string $contenu, string $image, array $tags)
+    public function __construct(int $id_touite,Auteur $auteur, string $date, string $contenu, ?string $image, ?array $tags)
     {
         $this->id_touite = $id_touite;
         $this->auteur = $auteur;

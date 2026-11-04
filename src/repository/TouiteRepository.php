@@ -3,8 +3,11 @@
 namespace touiteur\repository;
 
 
+
 use Exception;
 use PDO;
+use touiteur\objet\Touite;
+use touiteur\objet\Auteur;
 
 class TouiteRepository {
 
@@ -59,16 +62,39 @@ class TouiteRepository {
 
     public function getAllTouites(): array{
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
-        u.id_user,u.nom_user,u.prenom_user,u.email_user,
-        i.chemin_img
-        FROM touite t
-        JOIN utilisateur u ON u.id_user = t.id_user
-        LEFT JOIN image i ON t.id_image = i.id_image
-        GROUP BY t.id_touite, t.texte_touite, t.date_touite,u.nom_user,u.prenom_user,u.email_user,i.chemin_img
-        ORDER BY t.date_touite DESC";
+                   u.id_user, u.nom_user, u.prenom_user, u.email_user,
+                   i.chemin_img
+            FROM touite t
+            JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            ORDER BY t.date_touite DESC";
 
         $stmt =     $this->pdo->query($sql);
-        return $stmt->fetchAll();
+        $rows = $stmt->fetchAll();
+
+        $touites = [];
+
+        foreach ($rows as $row) {
+            $auteur = new Auteur(
+                (int)$row['id_user'],
+                $row['nom_user'],
+                $row['prenom_user'],
+                $row['email_user'],
+                0
+            );
+
+            $touites[] = new Touite(
+                (int)$row['id_touite'],
+                $auteur,
+                $row['date_touite'],
+                $row['texte_touite'],
+                $row['chemin_img'] ?? null,
+                [] // ou null selon ce que tu veux initialiser
+            );
+        }
+
+        return $touites;
     }
 
     public function addTouite(int $id_user, string $texte, ?int $id_image = null): string{
