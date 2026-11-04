@@ -160,6 +160,71 @@ class TouiteRepository {
         ]);
     }
 
+    public function initTrigger()
+    {
+        $sql = "CREATE OR REPLACE TRIGGER checkFollow
+                BEFORE INSERT ON abonnement_user
+                FOR EACH ROW
+                DECLARE
+                em1 utilisateur.email_user%TYPE;
+                    em2 utilisateur.email_user%TYPE;
+                BEGIN
+                SELECT email_user INTO em1 FROM utilisateur WHERE id_user = :NEW.id_follower;
+                SELECT email_user INTO em2 FROM utilisateur WHERE id_user = :NEW.id_followed;
+                
+                IF :NEW.id_follower = :NEW.id_followed OR em1 = em2 THEN
+                        RAISE_APPLICATION_ERROR(-20001, 'Vous ne pouvez pas vous suivre vous-même.');
+                END IF;
+                END;
+                /";
+        $this->pdo->exec($sql);
+        echo "Trigger Follow ok";
+        $sql = "CREATE OR REPLACE TRIGGER checkTouiteLimite
+                BEFORE INSERT ON touites
+                DECLARE 
+                id utilisateur.id_user%TYPE;
+                cpt NUMBER;
+                FOR EACH ROW
+                BEGIN
+                id := :NEW.id_user;
+                SELECT COUNT(*) INTO cpt FROM Touites WHERE id_user = id and TO_CHAR(date_touite, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD');
+                IF cpt >= 50 THEN
+                        RAISE_APPLICATION_ERROR(-20001, 'Limite de touites par jour atteinte.');
+                END IF;
+                END;
+                /";
+        $this->pdo->exec($sql);
+        echo "Trigger Limite ok";
+
+        $sql = "CREATE OR REPLACE TRIGGER checkFollow
+        BEFORE UPDATE ON touites
+        FOR EACH ROW
+        
+        BEGIN
+        
+        IF :NEW.id_user = :OLD.id_user THEN
+                RAISE_APPLICATION_ERROR(-20001, 'Vous ne pouvez pas modifier le propriétaire d'un touite.');
+        END IF;
+        END;
+        /";
+        $this->pdo->exec($sql);
+        echo "Trigger Limite ok";
+
+
+        $sql = "CREATE OR REPLACE TRIGGER majNbTouite
+        AFTER INSERT ON touite
+        FOR EACH ROW
+        BEGIN
+        UPDATE utilisateur
+        SET nb_touites = nb_touites + 1
+        WHERE id_user = :NEW.id_user;
+        END;
+        /";
+
+        $this->pdo->exec($sql);
+        echo "Trigger Limite ok";
+    }
+
 
     //TODO rajouter le systeme d'évaluation
 
