@@ -92,8 +92,47 @@ class TouiteRepository {
         $stmt->execute(['id_user' => $id_user]);
 
         return $id;
-    } //TODO ajouter au fil du temps les fonctionalites (style tag et tout)
+    }
 
+    //TODO rajouter le systeme d'évaluation
+
+    public function addTag(string $libelle,string $description): string{
+        $libelle = trim($libelle);
+        $description = trim($description);
+        if($libelle === ''|| mb_strlen($libelle) > 50){
+            throw new \InvalidArgumentException("Le libelle ne doit pas dépasser 50 caracteres");
+        }
+        if ($description === '' || mb_strlen($description) > 255){
+            throw new \InvalidArgumentException("La description ne doit pas dépasser 255 caracteres");
+        }
+
+        $sql = "INSERT INTO tag (libelle, description) VALUES (:libelle, :description)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'libelle' => $libelle,
+            'description' => $description
+        ]);
+        $id = $this->pdo->lastInsertId();
+        return $id;
+    }
+
+    public function linkTagUser(int $id_tag,int $id_user){
+        $sql = "INSERT INTO abonnement_tag (id_user, id_tag) VALUES (:id_tag, :id_user)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_tag' => $id_tag,
+            'id_user' => $id_user
+        ]);
+    }
+
+    public function linkTouiteTag(int $id_touite,int $id_tag){
+        $sql = "INSERT INTO touite_tag (id_touite, id_tag) VALUES (:id_touite, :id_tag)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_touite' => $id_touite,
+            'id_tag' => $id_tag
+        ]);
+    }
 
 
     //TODO rajouter le systeme d'évaluation
