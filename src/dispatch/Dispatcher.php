@@ -1,7 +1,8 @@
 <?php
 
-namespace src\dispatch;
+namespace touiteur\dispatch;
 
+use touiteur\exception\RouterException;
 use src\action\Action;
 
 
@@ -22,20 +23,43 @@ class Dispatcher
         return $this;
     }
 
-    public function run(): void
-    {
-        if (isset($this->actions[$this->action])) {
-            $classe = new $this->actions[$this->action]();
-            $this->renderPage($classe->execute());
-        } else {
-            $classe = new DefaultAction();
-            $this->renderPage($classe->execute());
+    public function run(): void {
+        if (!isset($this->actions[$this->action])) {
+            throw new RouterException("Action '{$this->action}' not found"); //TODO routerException
         }
+
+        $class  = $this->actions[$this->action];
+        $action = new $class();
+        $html   = $action->execute();   // on récupère le HTML
+
+        $this->renderPage($html);       // c'est renderPage qui fait le echo
     }
 
     private function renderPage(string $html): void
     {
-        echo $html;
+        echo <<<HTML
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+        <meta charset="UTF-8">
+        <title>Touiteur</title>
+        </head>
+        <body>
+            <header>
+            <h1>Touiteur</h1>
+            <nav>
+            <a href="?action=default">MenuPrincipal</a>
+            <a href="?action=add-touite">Ajouter touites</a>
+            <a href="?action=menuAdmin">Menu Admin</a>
+            <a href="?action=connexion">Connexion</a>
+           </nav>
+           </header>
+           <main>
+           $html;
+           </main>
+           </body>
+HTML;
+
     }
 
 }

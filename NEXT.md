@@ -26,3 +26,12 @@ ne pas oublier la protection contre le XSS
 
 Personne 3 :
 
+
+
+
+Etape suivante : 
+
+
+faire les 3 classes object : touites, user et tag dans classes
+
+
