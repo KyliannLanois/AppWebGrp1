@@ -7,7 +7,7 @@ namespace touiteur\repository;
 use Exception;
 use PDO;
 use touiteur\objet\Touite;
-use touiteur\objet\Auteur;
+use touiteur\objet\User;
 
 class TouiteRepository {
 
@@ -76,7 +76,7 @@ class TouiteRepository {
         $touites = [];
 
         foreach ($rows as $row) {
-            $auteur = new Auteur(
+            $auteur = new User(
                 (int)$row['id_user'],
                 $row['nom_user'],
                 $row['prenom_user'],
@@ -158,6 +158,46 @@ class TouiteRepository {
             'id_touite' => $id_touite,
             'id_tag' => $id_tag
         ]);
+    }
+
+    public function addUser(string $nom_user,string $prenom_user,string $email_user):string{
+        $nom_user = trim($nom_user);
+        $prenom_user = trim($prenom_user);
+        $email_user = trim($email_user);
+        if($email_user === '' || filter_var($email_user, FILTER_VALIDATE_EMAIL)){
+            throw new \InvalidArgumentException("L'adresse email n'est pas valide");
+        }
+        if($nom_user === ''){
+            throw new \InvalidArgumentException("Le nom est obligatoire");
+        }
+        if($prenom_user === ''){
+            throw new \InvalidArgumentException("Le prenom est obligatoire");
+        }
+
+        $sql = "INSERT INTO utilisateur (nom_user,prenom_user,email_user) VALUES (:nom_user, :prenom_user, :email_user)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'nom_user' => $nom_user,
+            'prenom_user' => $prenom_user,
+            'email_user' => $email_user
+        ]);
+        $id = $this->pdo->lastInsertId();
+        return $id;
+    }
+
+    public function getUser(int $id_user):User{
+        $sql = "SELECT * FROM utilisateur WHERE id_user = :id_user";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id_user' => $id_user]);
+        $row = $stmt->fetch();
+        $auteur = new User(
+            (int)$row['id_user'],
+            $row['nom_user'],
+            $row['prenom_user'],
+            $row['email_user'],
+            $row['nb_touites'],
+        );
+        return $auteur;
     }
 
 

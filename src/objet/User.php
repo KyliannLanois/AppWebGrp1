@@ -2,7 +2,7 @@
 
 namespace touiteur\objet;
 
-class Auteur
+class User
 {
 
     private int $id_user;
