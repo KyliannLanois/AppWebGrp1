@@ -9,7 +9,7 @@ class HomeAction extends Action {
 
     public function execute(): string{
         $repo = TouiteRepository::getInstance();
-        $touites = $repo->findAll();
+        $touites = $repo->getAllTouites();
 
         $html = "<section class='touite-action'>";
         $html .= "<h2>Derniers touites publiés</h2>";
