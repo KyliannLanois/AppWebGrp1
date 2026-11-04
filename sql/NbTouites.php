@@ -11,6 +11,6 @@ END;
 /";
 
 $resultset = $connexion->query($sql);
-echo "Trigger pk";
+echo "Trigger ok";
 $connexion = null;
 
