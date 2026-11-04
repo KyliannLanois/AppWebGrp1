@@ -54,6 +54,9 @@ class TouiteRepository {
     }
 
 
+
+
+
     public function getAllTouites(): array{
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
         u.id_user,u.nom_user,u.prenom_user,u.email_user,
@@ -66,7 +69,36 @@ class TouiteRepository {
 
         $stmt =     $this->pdo->query($sql);
         return $stmt->fetchAll();
-    }  //TODO rajouter le systeme d'évaluation
+    }
+
+    public function addTouite(int $id_user, string $texte, ?int $id_image = null): string{
+
+        $texte = trim($texte);
+        if ($texte === '' || mb_strlen($texte) > 235) {
+            throw new \InvalidArgumentException("Le touite doit faire entre 1 et 235 caractères");
+        }
+
+        $sql = "INSERT INTO touite (id_user, texte_touite, id_image) VALUES (:id_user, :texte_touite, :id_image)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_user' => $id_user,
+            'texte_touite' => $texte,
+            'id_image' => $id_image
+        ]);
+
+        $id = $this->pdo->lastInsertId();
+
+        $stmt = $this->pdo->prepare("UPDATE utilisateur SET nb_touites = nb_touites + 1 WHERE id_user = :id_user");
+        $stmt->execute(['id_user' => $id_user]);
+
+        return $id;
+    } //TODO ajouter au fil du temps les fonctionalites (style tag et tout)
+
+
+
+    //TODO rajouter le systeme d'évaluation
+
+
 
 
 }

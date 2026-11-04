@@ -2,14 +2,15 @@
 
 namespace touiteur\dispatch;
 
-use src\action\Action;
+use touiteur\exception\RouterException;
+use touiteur\action\Action;
 
 
 
 class Dispatcher
 {
     protected ?string $action = null;
-    protected $actions = [];
+    protected array $actions = [];
 
     public function __construct()
     {
@@ -24,7 +25,7 @@ class Dispatcher
 
     public function run(): void {
         if (!isset($this->actions[$this->action])) {
-            throw new \iutnc\deefy\exception\RouterException("Action '{$this->action}' not found"); //TODO routerException
+            throw new RouterException("Action '{$this->action}' not found"); //TODO routerException
         }
 
         $class  = $this->actions[$this->action];
@@ -47,7 +48,7 @@ class Dispatcher
             <header>
             <h1>Touiteur</h1>
             <nav>
-            <a href="?action=menuPrincipal">MenuPrincipal</a>
+            <a href="?action=default">MenuPrincipal</a>
             <a href="?action=menuAdmin">Menu Admin</a>
             <a href="?action=connexion">Connexion</a>
            </nav>
