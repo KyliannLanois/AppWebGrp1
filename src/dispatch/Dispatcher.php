@@ -36,7 +36,28 @@ class Dispatcher
 
     private function renderPage(string $html): void
     {
-        echo $html;
+        echo <<<HTML
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+        <meta charset="UTF-8">
+        <title>Touiteur</title>
+        </head>
+        <body>
+            <header>
+            <h1>Touiteur</h1>
+            <nav>
+            <a href="?action=menuPrincipal">MenuPrincipal</a>
+            <a href="?action=menuAdmin">Menu Admin</a>
+            <a href="?action=connexion">Connexion</a>
+           </nav>
+           </header>
+           <main>
+           $html;
+           </main>
+           </body>
+HTML;
+
     }
 
 }
