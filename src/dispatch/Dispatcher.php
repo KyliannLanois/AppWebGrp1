@@ -3,14 +3,14 @@
 namespace touiteur\dispatch;
 
 use touiteur\exception\RouterException;
-use touiteur\action\Action;
+use src\action\Action;
 
 
 
 class Dispatcher
 {
     protected ?string $action = null;
-    protected array $actions = [];
+    protected $actions = [];
 
     public function __construct()
     {

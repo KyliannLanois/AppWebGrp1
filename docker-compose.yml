@@ -1,18 +1,11 @@
 services:
   web:
-    image: php:8.2-apache
+    build: .
     container_name: touiteur_app
     ports:
       - "8000:80"
     volumes:
-      - .:/var/www/html
-    environment:
-      - APACHE_DOCUMENT_ROOT=/var/www/html/public
-    command: >
-      bash -c "docker-php-ext-install pdo pdo_mysql &&
-               sed -ri -e 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/*.conf &&
-               sed -ri -e 's!/var/www/!/var/www/html/public!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf &&
-               apache2-foreground"
+      - .:/var/www/html:Z
     depends_on:
       - db
 
