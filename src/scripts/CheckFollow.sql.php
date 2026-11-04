@@ -1,6 +1,19 @@
 <?php
 
-$connexion = new PDO('mysql:host=db;dbname=touiteur', $_GET['user'], $_GET['pass']);
+$config = parse_ini_file(__DIR__ . '/../config/db.config.ini', true);
+
+if ($config === false) {
+    echo ("Fichier de configuration introuvable ou invalide.");
+}
+
+$db = $config['database'];
+
+$connexion = new PDO(
+    "mysql:host={$db['host']};dbname={$db['name']};charset=utf8mb4",
+    $db['user'],
+    $db['password'],
+    [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+);
 
 $sql = "CREATE OR REPLACE TRIGGER checkFollow
 BEFORE INSERT ON abonnement_user
