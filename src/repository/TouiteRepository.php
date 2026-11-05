@@ -62,12 +62,12 @@ class TouiteRepository {
 
     public function getAllTouites(): array{
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
-                   u.id_user, u.nom_user, u.prenom_user, u.email_user,
+                   u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
             ORDER BY t.date_touite DESC";
 
         $stmt =     $this->pdo->query($sql);
@@ -78,6 +78,7 @@ class TouiteRepository {
         foreach ($rows as $row) {
             $auteur = new User(
                 (int)$row['id_user'],
+                $row['username'],
                 $row['nom_user'],
                 $row['prenom_user'],
                 $row['email_user'],
@@ -97,12 +98,21 @@ class TouiteRepository {
         return $touites;
     }
 
-    public function addTouite(int $id_user, string $texte, ?int $id_image = null): string{
+    public function addTouite(string $username, string $texte, ?int $id_image = null): string{
 
         $texte = trim($texte);
         if ($texte === '' || mb_strlen($texte) > 235) {
             throw new \InvalidArgumentException("Le touite doit faire entre 1 et 235 caractères");
         }
+        $sql = "SELECT id_user FROM utilisateur WHERE username = :username";
+        $stmt0 = $this->pdo->prepare($sql);
+        $stmt0->execute(['username' => $username]);
+
+        $id_user = $stmt0->fetchColumn();
+        if ($id_user === false){
+            throw new \InvalidArgumentException("Le utilisateur n'existe pas");
+        }
+
 
         $sql = "INSERT INTO touite (id_user, texte_touite, id_image) VALUES (:id_user, :texte_touite, :id_image)";
         $stmt = $this->pdo->prepare($sql);
@@ -160,7 +170,8 @@ class TouiteRepository {
         ]);
     }
 
-    public function addUser(string $nom_user,string $prenom_user,string $email_user):string{
+    public function addUser(string $username,string $nom_user,string $prenom_user,string $email_user):string{
+        $username = trim($username);
         $nom_user = trim($nom_user);
         $prenom_user = trim($prenom_user);
         $email_user = trim($email_user);
@@ -173,10 +184,14 @@ class TouiteRepository {
         if($prenom_user === ''){
             throw new \InvalidArgumentException("Le prenom est obligatoire");
         }
+        if($username === ''){
+            throw new \InvalidArgumentException("Le nom d'utilisateur est obligatoire");
+        }
 
-        $sql = "INSERT INTO utilisateur (nom_user,prenom_user,email_user) VALUES (:nom_user, :prenom_user, :email_user)";
+        $sql = "INSERT INTO utilisateur (username,nom_user,prenom_user,email_user) VALUES (:username,:nom_user, :prenom_user, :email_user)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
+            'username' => $username,
             'nom_user' => $nom_user,
             'prenom_user' => $prenom_user,
             'email_user' => $email_user
@@ -185,19 +200,23 @@ class TouiteRepository {
         return $id;
     }
 
-    public function getUser(int $id_user):User{
-        $sql = "SELECT * FROM utilisateur WHERE id_user = :id_user";
+    public function getUser(string $username):User{
+        $sql = "SELECT * FROM utilisateur WHERE username = :username";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['id_user' => $id_user]);
+        $stmt->execute(['username' => $username]);
         $row = $stmt->fetch();
-        $auteur = new User(
+        if($row == false){
+            throw new \InvalidArgumentException("L'utilisateur n'existe pas");
+        }
+        $user = new User(
             (int)$row['id_user'],
+            $row['username'],
             $row['nom_user'],
             $row['prenom_user'],
             $row['email_user'],
             $row['nb_touites'],
         );
-        return $auteur;
+        return $user;
     }
 
 

@@ -31,5 +31,8 @@ class TouiteRendererCompact extends TouiteRendererDefault{
 HTML;
     } // TODO a rajouter ça <span>Score : {$score}</span> |
 
-
+    public function renderLong(): string
+    {
+        return (new TouiteRendererLong($this->touite))->renderLong();
+    }
 }

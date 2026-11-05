@@ -5,7 +5,13 @@ namespace touiteur\render;
 
 class TouiteRendererLong extends TouiteRendererDefault{
 
-    public function renderLong($touite){
+    public function render(int $selector = 1): string
+    {
+        return $this->renderLong();
+    }
+
+    public function renderLong(): string
+    {
 
         //TODO modifier en fonction de la base de données
 
@@ -37,5 +43,4 @@ class TouiteRendererLong extends TouiteRendererDefault{
     {
         return (new TouiteRendererCompact($this->touite))->renderCompact();
     }
-
 }
