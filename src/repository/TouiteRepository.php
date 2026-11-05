@@ -221,6 +221,48 @@ class TouiteRepository {
         return $user;
     }
 
+    public function getListTouiteUser(int $iduser): array{
+
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+                   u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
+                   i.chemin_img
+            FROM touite t
+            WHERE t.id_user = :iduser
+            JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            ORDER BY t.date_touite DESC";
+        $stmt =     $this->pdo->query($sql);
+        $rows = $stmt->fetchAll();
+
+        $touites = [];
+
+        foreach ($rows as $row) {
+            $auteur = new User(
+                (int)$row['id_user'],
+                $row['username'],
+                $row['nom_user'],
+                $row['prenom_user'],
+                $row['email_user'],
+                0
+            );
+
+            $touites[] = new Touite(
+                (int)$row['id_touite'],
+                $auteur,
+                $row['date_touite'],
+                $row['texte_touite'],
+                $row['chemin_img'] ?? null,
+                [] // ou null selon ce que tu veux initialiser
+            );
+        }
+
+        return $touites;
+
+
+
+    }
+
 
 
     //TODO rajouter le systeme d'évaluation
