@@ -82,3 +82,6 @@ CONSTRAINT chk_valeur_rating CHECK (valeur IN (-1, 1)),
 CONSTRAINT fk_eval_user FOREIGN KEY (id_user) REFERENCES utilisateur(id_user),
 CONSTRAINT fk_eval_touite FOREIGN KEY (id_touite) REFERENCES touite(id_touite)
 );
+
+
+
