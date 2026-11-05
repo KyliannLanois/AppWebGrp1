@@ -10,9 +10,9 @@ DROP TABLE IF EXISTS utilisateur;
 CREATE TABLE utilisateur (
 id_user INT AUTO_INCREMENT PRIMARY KEY,
 username VARCHAR(30) NOT NULL UNIQUE,
-nom_user VARCHAR(50) NOT NULL,
-prenom_user VARCHAR(50) NOT NULL,
-email_user VARCHAR(120) NOT NULL UNIQUE,
+nom_user VARCHAR(50),
+prenom_user VARCHAR(50),
+email_user VARCHAR(120),
 nb_touites INT DEFAULT 0 NOT NULL,
 CONSTRAINT chk_user_nb_touites CHECK (nb_touites >= 0)
 );
