@@ -5,9 +5,7 @@ namespace touiteur\render;
 
 class TouiteRendererCompact extends TouiteRendererDefault{
 
-    public function render(int $selector = 1):string{
-        return $this->renderCompact();
-    }
+
 
     public function renderCompact(): string{
 
@@ -33,9 +31,5 @@ class TouiteRendererCompact extends TouiteRendererDefault{
 HTML;
     } // TODO a rajouter ça <span>Score : {$score}</span> |
 
-    public function renderLong(): string
-    {
-        return $this->renderCompact();
-    }
 
 }
