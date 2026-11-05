@@ -160,7 +160,7 @@ class TouiteRepository {
         ]);
     }
 
-    public function initTrigger()
+    public function initTriggers() :void
     {
         $sql = "CREATE OR REPLACE TRIGGER checkFollow
                 BEFORE INSERT ON abonnement_user

@@ -15,7 +15,6 @@ try {
     $dispatcher->addRoute('default', HomeAction::class);
     $dispatcher->addRoute('home', HomeAction::class);
     $dispatcher->addRoute('add-touite', AddTouitesAction::class);
-
     $dispatcher->run();
 
 
