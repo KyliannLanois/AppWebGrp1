@@ -206,9 +206,9 @@ class TouiteRepository {
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img
             FROM touite t
-            WHERE t.id_user = :iduser
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
+            WHERE t.id_user = :iduser
             GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
             ORDER BY t.date_touite DESC";
         $stmt = $this->pdo->prepare($sql);
