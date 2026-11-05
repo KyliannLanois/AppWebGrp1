@@ -211,8 +211,12 @@ class TouiteRepository {
             LEFT JOIN image i ON t.id_image = i.id_image
             GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
             ORDER BY t.date_touite DESC";
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'iduser' => $iduser
+        ]);
         $rows = $stmt->fetchAll();
+
 
         return ($this->getTouites($rows));
     }
@@ -237,7 +241,10 @@ class TouiteRepository {
             LEFT JOIN image i ON t.id_image = i.id_image
             GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
             ORDER BY t.date_touite DESC";
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'iduser' => $tag->getIdUser()
+        ]);
         $rows = $stmt->fetchAll();
 
         return ($this->getTouites($rows));
@@ -300,7 +307,7 @@ class TouiteRepository {
     public function getTouiteById(int $id_touite):Touite{
         $sql = "SELECT * FROM touite WHERE id_touite = :id_touite";
 
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id_touite' => $id_touite]);
         $row = $stmt->fetch();
 
