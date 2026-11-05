@@ -172,10 +172,11 @@ class TouiteRepository {
 
     public function addUser(string $username,?string $nom_user = null,?string $prenom_user=null,?string $email_user=null):string{
         $username = trim($username);
-        $nom_user = trim($nom_user);
-        $prenom_user = trim($prenom_user);
-        $email_user = trim($email_user);
-        if($email_user === '' || filter_var($email_user, FILTER_VALIDATE_EMAIL)){
+        $nom_user = $nom_user !== null ? trim($nom_user) : null;
+        $prenom_user = $prenom_user !== null ? trim($prenom_user) : null;
+        $email_user = $email_user !== null ? trim($email_user) : null;
+
+        if($email_user !== null && !filter_var($email_user, FILTER_VALIDATE_EMAIL)){
             throw new \InvalidArgumentException("L'adresse email n'est pas valide");
         }
         if($nom_user === ''){
@@ -205,7 +206,7 @@ class TouiteRepository {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['username' => $username]);
         $row = $stmt->fetch();
-        if($row == false){
+        if($row === false){
             $idNewUser = $this->addUser($username);
             return new User($idNewUser,$username);
         }
