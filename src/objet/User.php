@@ -13,7 +13,7 @@ class User
 
     public function __construct(
         int $id_user,
-        int $nb_touites = 0,
+        ?int $nb_touites = 0,
         ?string $username = null,
         ?string $nom = null,
         ?string $prenom = null,

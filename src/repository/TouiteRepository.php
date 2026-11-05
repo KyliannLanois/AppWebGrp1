@@ -59,7 +59,6 @@ class TouiteRepository {
 
 
 
-
     public function getAllTouites(): array{
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
@@ -78,11 +77,11 @@ class TouiteRepository {
         foreach ($rows as $row) {
             $auteur = new User(
                 (int)$row['id_user'],
+                (int)($row['nb_touites'] ?? 0),
                 $row['username'],
                 $row['nom_user'],
                 $row['prenom_user'],
                 $row['email_user'],
-                0
             );
 
             $touites[] = new Touite(
@@ -212,11 +211,12 @@ class TouiteRepository {
         }
         $user = new User(
             (int)$row['id_user'],
+            $row['nb_touites'],
             $row['username'],
             $row['nom_user'],
             $row['prenom_user'],
-            $row['email_user'],
-            $row['nb_touites'],
+            $row['email_user']
+
         );
         return $user;
     }
