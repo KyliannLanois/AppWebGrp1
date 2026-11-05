@@ -7,6 +7,7 @@ use touiteur\repository\TouiteRepository;
 use touiteur\dispatch\Dispatcher;
 use touiteur\action\HomeAction;
 use touiteur\action\AddTouitesAction;
+use touiteur\action\DisplayTouitesOfUserAction;
 
 try {
     TouiteRepository::setConfig(__DIR__ . "/../config/db.config.ini");
@@ -17,6 +18,7 @@ try {
     $dispatcher->addRoute('home', HomeAction::class);
     $dispatcher->addRoute('add-touite', AddTouitesAction::class);
     $dispatcher->addRoute('display-touite', DisplayTouiteAction::class);
+    $dispatcher->addRoute('DisplayTouiteOfUser', DisplayTouitesOfUserAction::class);
 
     $dispatcher->run();
 
