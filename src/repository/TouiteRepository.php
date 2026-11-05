@@ -170,7 +170,7 @@ class TouiteRepository {
         ]);
     }
 
-    public function addUser(string $username,string $nom_user,string $prenom_user,string $email_user):string{
+    public function addUser(string $username,?string $nom_user = null,?string $prenom_user=null,?string $email_user=null):string{
         $username = trim($username);
         $nom_user = trim($nom_user);
         $prenom_user = trim($prenom_user);
@@ -206,7 +206,8 @@ class TouiteRepository {
         $stmt->execute(['username' => $username]);
         $row = $stmt->fetch();
         if($row == false){
-            return new User($username);
+            $idNewUser = $this->addUser($username);
+            return new User($idNewUser,$username);
         }
         $user = new User(
             (int)$row['id_user'],
