@@ -12,7 +12,7 @@ class TouiteRendererCompact extends TouiteRendererDefault{
         $id = $this->touite->getIdTouite();
         $texte =htmlspecialchars($this->touite->getContenu());
         $auteurObj = $this->touite->getAuteur();
-        $nomAuteur = $auteurObj->getNom();
+        $nomAuteur = $auteurObj->getUsername();
         $auteur = htmlspecialchars($nomAuteur);
 
         //$score=$this->touite->getScore(); //TODO faire le score
