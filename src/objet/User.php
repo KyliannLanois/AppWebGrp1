@@ -6,13 +6,15 @@ class User
 {
 
     private int $id_user;
+    private string $username;
     private string $nom;
     private string $prenom;
     private string $email;
     private int $nb_touites;
-    public function __construct(int $id_user, string $nom, string $prenom, string $email, int $nb_touites)
+    public function __construct(int $id_user,string $username, string $nom, string $prenom, string $email, int $nb_touites)
     {
         $this->id_user = $id_user;
+        $this->username = $username;
         $this->nom = $nom;
         $this->prenom = $prenom;
         $this->email = $email;
@@ -42,6 +44,10 @@ class User
     public function getNom(): string
     {
         return $this->nom;
+    }
+
+    public function getUsername(): string{
+        return $this->username;
     }
 
 

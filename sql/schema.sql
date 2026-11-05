@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS utilisateur;
 
 CREATE TABLE utilisateur (
 id_user INT AUTO_INCREMENT PRIMARY KEY,
+username VARCHAR(30) NOT NULL UNIQUE,
 nom_user VARCHAR(50) NOT NULL,
 prenom_user VARCHAR(50) NOT NULL,
 email_user VARCHAR(120) NOT NULL UNIQUE,
@@ -81,9 +82,3 @@ CONSTRAINT chk_valeur_rating CHECK (valeur IN (-1, 1)),
 CONSTRAINT fk_eval_user FOREIGN KEY (id_user) REFERENCES utilisateur(id_user),
 CONSTRAINT fk_eval_touite FOREIGN KEY (id_touite) REFERENCES touite(id_touite)
 );
-
-
-INSERT INTO `utilisateur` (`id_user`, `nom_user`, `prenom_user`, `email_user`, `nb_touites`) VALUES
-                                                                                                             (1, 'Leger', 'Quentin', 'quentin@test.fr', 0),
-                                                                                                             (2, 'Dupont', 'Jean', 'jean@test.fr',0)
-    ON DUPLICATE KEY UPDATE id_user=id_user;
