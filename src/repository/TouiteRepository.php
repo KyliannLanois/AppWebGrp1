@@ -186,16 +186,15 @@ class TouiteRepository {
         $row = $stmt->fetch();
         if($row == false){
             $idNewUser = (int)$this->addUser($username);
-            return new User($idNewUser, 0, $username, $username, $username, $username . '@touiteur.local');
+            return new User($idNewUser, 0, $username);
         }
         $user = new User(
             (int)$row['id_user'],
-            $row['nb_touites'],
+            0,
             $row['username'],
             $row['nom_user'],
             $row['prenom_user'],
             $row['email_user']
-
         );
         return $user;
     }
@@ -258,11 +257,11 @@ class TouiteRepository {
         foreach ($rows as $row) {
             $auteur = new User(
                 (int)$row['id_user'],
+                0,
                 $row['username'],
                 $row['nom_user'],
                 $row['prenom_user'],
-                $row['email_user'],
-                0
+                $row['email_user']
             );
 
             $touites[] = new Touite(
