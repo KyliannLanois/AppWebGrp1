@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use touiteur\action\DisplayTouiteAction;
 use touiteur\repository\TouiteRepository;
 use touiteur\dispatch\Dispatcher;
 use touiteur\action\HomeAction;
@@ -15,6 +16,7 @@ try {
     $dispatcher->addRoute('default', HomeAction::class);
     $dispatcher->addRoute('home', HomeAction::class);
     $dispatcher->addRoute('add-touite', AddTouitesAction::class);
+    $dispatcher->addRoute('display-touite', DisplayTouiteAction::class);
 
     $dispatcher->run();
 

@@ -278,8 +278,6 @@ class TouiteRepository {
 
     }
 
-
-
     public function getUserById(string $id_user):User{
         $sql = "SELECT * FROM utilisateur WHERE id_user = :id_user";
         $stmt = $this->pdo->prepare($sql);
@@ -290,27 +288,28 @@ class TouiteRepository {
         }
         $user = new User(
             (int)$row['id_user'],
+            0,
             $row['username'],
             $row['nom_user'],
             $row['prenom_user'],
-            $row['email_user'],
-            $row['nb_touites'],
+            $row['email_user']
         );
         return $user;
     }
 
-    public function getTouite(int $id_touite):Touite{
+    public function getTouiteById(int $id_touite):Touite{
         $sql = "SELECT * FROM touite WHERE id_touite = :id_touite";
 
         $stmt = $this->pdo->query($sql);
         $stmt->execute(['id_touite' => $id_touite]);
         $row = $stmt->fetch();
 
+        $user = $this->getUserById((int)$row['id_user']);
 
 
         $touite = new Touite(
             (int)$row['id_touite'],
-            $auteur,
+            $user,
             $row['date_touite'],
             $row['texte_touite'],
             $row['chemin_img'] ?? null,
