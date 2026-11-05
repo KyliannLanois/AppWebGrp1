@@ -175,6 +175,7 @@ class TouiteRepository {
         $nom_user = trim($nom_user);
         $prenom_user = trim($prenom_user);
         $email_user = trim($email_user);
+
         if($email_user === '' || filter_var($email_user, FILTER_VALIDATE_EMAIL)){
             throw new \InvalidArgumentException("L'adresse email n'est pas valide");
         }
@@ -206,8 +207,8 @@ class TouiteRepository {
         $stmt->execute(['username' => $username]);
         $row = $stmt->fetch();
         if($row == false){
-            $idNewUser = $this->addUser($username);
-            return new User($idNewUser,$username);
+            $idNewUser = (int)$this->addUser($username);
+            return new User($idNewUser, 0, $username, $username, $username, $username . '@touiteur.local');
         }
         $user = new User(
             (int)$row['id_user'],
