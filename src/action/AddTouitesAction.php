@@ -9,6 +9,7 @@ class AddTouitesAction extends Action {
 
     public function execute(): string{
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $repo = new TouiteRepository();
             $texte = trim($_POST['texte'] ?? '');
 
             if (empty($texte)) {
@@ -19,11 +20,12 @@ class AddTouitesAction extends Action {
                 return "<p> Le texte du touite ne peut etre plus long que 235 caractères</p>";
             }
 
-            $idUser = 1; //TODO a voir après en fonction des auth
+            //Pour gerer le username
+            $user = $repo->getUser(trim($_POST['username']));
+            $username = $user->getUsername();
 
 
-            $repo = new TouiteRepository();
-            $repo->addTouite($idUser, $texte);
+            $repo->addTouite($username, $texte);
 
             header('Location: ?action=default');
             exit();
@@ -39,6 +41,8 @@ class AddTouitesAction extends Action {
             <h2>Publier un nouveau touite</h2>
             <form method="POST" action="?action=add-touite">
                 <div>
+                    <label for="username">Rentrer ci-dessous votre pseudo : </label><br>
+                    <input type="text" id="username" name="username" maxlength="50" value="{$safeText}"><br>
                     <label for="texte">Votre message (235 caractères max, incluez vos #tags) :</label><br>
                     <textarea id="texte" name="texte" rows="4" cols="50" maxlength="235" required>{$safeText}</textarea>
                 </div>

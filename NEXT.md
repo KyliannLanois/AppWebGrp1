@@ -35,3 +35,14 @@ Etape suivante :
 faire les 3 classes object : touites, user et tag dans classes
 
 
+
+
+
+1. afficher touites ordre chrono inverse
+2. Afficher touite detail
+3. 
+4. Afficher touite personne
+5. Afficher touite tag
+6. 
+
+

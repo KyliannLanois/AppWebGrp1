@@ -3,18 +3,18 @@
 
 namespace touiteur\render;
 
+use touiteur\action\DisplayTouitesOfUserAction;
+
 class TouiteRendererCompact extends TouiteRendererDefault{
 
-    public function render(int $selector = 1):string{
-        return $this->renderCompact();
-    }
+
 
     public function renderCompact(): string{
 
         $id = $this->touite->getIdTouite();
         $texte =htmlspecialchars($this->touite->getContenu());
         $auteurObj = $this->touite->getAuteur();
-        $nomAuteur = $auteurObj->getNom();
+        $nomAuteur = $auteurObj->getUsername();
         $auteur = htmlspecialchars($nomAuteur);
 
         //$score=$this->touite->getScore(); //TODO faire le score
@@ -22,7 +22,7 @@ class TouiteRendererCompact extends TouiteRendererDefault{
         return <<<HTML
         <article class="touite-card touite-compact">
             <div class="touite-header">
-                <strong>{$auteur}</strong>
+                <a href="?action=DisplayTouiteOfUser&id={$auteurObj->getIdUser()}">{$auteur}</a>
             </div>
             <p class="touite-content">{$texte}</p>
             <div class="touite-footer">
@@ -35,7 +35,6 @@ HTML;
 
     public function renderLong(): string
     {
-        return $this->renderCompact();
+        return (new TouiteRendererLong($this->touite))->renderLong();
     }
-
 }

@@ -6,14 +6,14 @@ namespace touiteur\objet;
 class Touite
 {
     private int $id_touite;
-    private Auteur $auteur;
+    private User $auteur;
     private string $date;
     private string $contenu;
     private ?string $image;
 
     private ?array $tags;
 
-    public function __construct(int $id_touite,Auteur $auteur, string $date, string $contenu, ?string $image, ?array $tags)
+    public function __construct(int $id_touite, User $auteur, string $date, string $contenu, ?string $image, ?array $tags)
     {
         $this->id_touite = $id_touite;
         $this->auteur = $auteur;
@@ -53,7 +53,7 @@ class Touite
         return $this->tags;
     }
 
-    public function getAuteur(): Auteur
+    public function getAuteur(): User
     {
         return $this->auteur;
     }

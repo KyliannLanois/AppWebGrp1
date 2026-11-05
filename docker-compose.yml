@@ -1,6 +1,8 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: touiteur_app
     ports:
       - "8000:80"
@@ -19,10 +21,10 @@ services:
       MYSQL_USER: touiteur_user
       MYSQL_PASSWORD: devpassword
     ports:
-      - "3307:3306"    # <-- Changer 3306:3306 en 3307:3306
+      - "3307:3306"
     volumes:
       - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-        - db_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

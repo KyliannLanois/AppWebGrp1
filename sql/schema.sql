@@ -9,9 +9,10 @@ DROP TABLE IF EXISTS utilisateur;
 
 CREATE TABLE utilisateur (
 id_user INT AUTO_INCREMENT PRIMARY KEY,
-nom_user VARCHAR(50) NOT NULL,
-prenom_user VARCHAR(50) NOT NULL,
-email_user VARCHAR(120) NOT NULL UNIQUE,
+username VARCHAR(30) NOT NULL UNIQUE,
+nom_user VARCHAR(50),
+prenom_user VARCHAR(50),
+email_user VARCHAR(120),
 nb_touites INT DEFAULT 0 NOT NULL,
 CONSTRAINT chk_user_nb_touites CHECK (nb_touites >= 0)
 );
@@ -83,7 +84,15 @@ CONSTRAINT fk_eval_touite FOREIGN KEY (id_touite) REFERENCES touite(id_touite)
 );
 
 
-INSERT INTO `utilisateur` (`id_user`, `nom_user`, `prenom_user`, `email_user`, `mdp_user`, `nb_touites`) VALUES
-                                                                                                             (1, 'Leger', 'Quentin', 'quentin@test.fr', '$2y$10$abcdefghijklmnopqrstuv', 0),
-                                                                                                             (2, 'Dupont', 'Jean', 'jean@test.fr', '$2y$10$abcdefghijklmnopqrstuv', 0)
-    ON DUPLICATE KEY UPDATE id_user=id_user;
+
+INSERT INTO `utilisateur` (`id_user`, `username`, `nom_user`, `prenom_user`, `email_user`, `nb_touites`) VALUES
+(1, 'quent_in', 'Leger', 'Quentin', 'quentin.leger@mail.fr', 2),
+(2, 'jdupont', 'Dupont', 'Jean', 'jean.dupont@mail.fr', 1),
+(3, 'alice_b', 'Bernard', 'Alice', 'alice.bernard@mail.fr', 0),
+(4, 'lucas_m', 'Martin', 'Lucas', 'lucas.martin@mail.fr', 5)
+ON DUPLICATE KEY UPDATE 
+    username=VALUES(username),
+    nom_user=VALUES(nom_user),
+    prenom_user=VALUES(prenom_user),
+    email_user=VALUES(email_user),
+    nb_touites=VALUES(nb_touites);
