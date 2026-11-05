@@ -3,6 +3,8 @@
 
 namespace touiteur\render;
 
+use touiteur\action\DisplayTouitesOfUserAction;
+
 class TouiteRendererCompact extends TouiteRendererDefault{
 
 
@@ -20,7 +22,7 @@ class TouiteRendererCompact extends TouiteRendererDefault{
         return <<<HTML
         <article class="touite-card touite-compact">
             <div class="touite-header">
-                <strong>{$auteur}</strong>
+                <a href="?action=DisplayTouitesOfUserAction&id={$auteurObj->getIdUser()}">{$auteur}</a>
             </div>
             <p class="touite-content">{$texte}</p>
             <div class="touite-footer">
