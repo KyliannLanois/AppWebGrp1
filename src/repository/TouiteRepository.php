@@ -327,6 +327,26 @@ class TouiteRepository {
         return $touite;
     }
 
+    public function getUserByID(int $id):User{
+        $sql = "SELECT * FROM utilisateur WHERE id_user = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id_user' => $id]);
+        $row = $stmt->fetch();
+        //if($row == false){
+          //  $idNewUser = (int)$this->addUser($username);
+           // return new User($idNewUser, 0, $username, $username, $username, $username . '@touiteur.local');
+        //}
+        $user = new User(
+            (int)$row['id_user'],
+            $row['nb_touites'],
+            $row['username'],
+            $row['nom_user'],
+            $row['prenom_user'],
+            $row['email_user']
+
+        );
+        return $user;
+    }
 
     //TODO rajouter le systeme d'évaluation
 

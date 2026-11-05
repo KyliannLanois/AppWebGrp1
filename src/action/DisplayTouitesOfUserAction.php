@@ -11,11 +11,15 @@ class DisplayTouitesOfUserAction extends Action
 
     public function execute(): string
     {
+
         $repo = TouiteRepository::getInstance();
-        $user = $repo->getUser(trim($_POST['username']));
+        $iduser = trim($_POST['id']);
+        $user = $repo->getUserByID($iduser);
+
+
         $username = $user->getUsername();
 
-        $touites = $repo->getAllTouites();
+        $touites = $repo->getListTouiteUser($iduser);
 
         $html = "<section class='touite-action'>";
         $html .= "<h2>Touites de ".$username."</h2>";
@@ -33,4 +37,7 @@ class DisplayTouitesOfUserAction extends Action
         $html .= "</section>";
         return $html;
     }
+
+
+
 }
