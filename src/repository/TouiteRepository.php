@@ -206,7 +206,7 @@ class TouiteRepository {
         $stmt->execute(['username' => $username]);
         $row = $stmt->fetch();
         if($row == false){
-            throw new \InvalidArgumentException("L'utilisateur n'existe pas");
+
         }
         $user = new User(
             (int)$row['id_user'],
