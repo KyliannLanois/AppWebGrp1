@@ -3,7 +3,10 @@ session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use touiteur\action\ConnexionAction;
+use touiteur\action\DislikeAction;
 use touiteur\action\DisplayTouiteAction;
+use touiteur\action\LikeAction;
+use touiteur\action\ProfilAction;
 use touiteur\repository\TouiteRepository;
 use touiteur\dispatch\Dispatcher;
 use touiteur\action\HomeAction;
@@ -21,7 +24,9 @@ try {
     $dispatcher->addRoute('display-touite', DisplayTouiteAction::class);
     $dispatcher->addRoute('DisplayTouiteOfUser', DisplayTouitesOfUserAction::class);
     $dispatcher->addRoute('connexion', ConnexionAction::class);
-
+    $dispatcher->addRoute('profil', ProfilAction::class);
+    $dispatcher->addRoute('like', LikeAction::class);
+    $dispatcher->addRoute('dislike', DislikeAction::class);
     $dispatcher->run();
 
 

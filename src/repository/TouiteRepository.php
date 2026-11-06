@@ -62,11 +62,11 @@ class TouiteRepository {
     public function getAllTouites(): array{
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
-                   i.chemin_img
+                   i.chemin_img, t.score
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
             ORDER BY t.date_touite DESC";
 
         $stmt =     $this->pdo->query($sql);
@@ -277,7 +277,9 @@ class TouiteRepository {
                 $row['date_touite'],
                 $row['texte_touite'],
                 $row['chemin_img'] ?? null,
-                [] // ou null selon ce que tu veux initialiser
+                [], // ou null selon ce que tu veux initialiser
+                $row['score'] ?? 0
+
             );
         }
 
@@ -320,14 +322,32 @@ class TouiteRepository {
             $row['date_touite'],
             $row['texte_touite'],
             $row['chemin_img'] ?? null,
-            [] // ou null selon ce que tu veux initialiser
+            [], // ou null selon ce que tu veux initialiser
+        $row['score'] ?? 0
         );
 
 
         return $touite;
     }
 
-    //TODO rajouter le systeme d'évaluation
+    public function calculerScore($idUser) : int {
+        $sql = "SELECT SUM(VALEUR) FROM evaluation WHERE id_user = :id_user";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id_user' => $idUser]);
+        $row = $stmt->fetch();
+        return $row['SUM(VALEUR)'];
+    }
+
+    public function likeTouite(int $idTouite){
+        $sql = "UPDATE touite SET score = score + 1 WHERE id_touite = :idTouite";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['idTouite' => $idTouite]);
+    }
+    public function dislikeTouite(int $idTouite){
+        $sql = "UPDATE touite SET score = score - 1 WHERE id_touite = :idTouite";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['idTouite' => $idTouite]);
+    }
 
 
 

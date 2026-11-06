@@ -19,6 +19,9 @@ class TouiteRendererLong extends TouiteRendererDefault{
         $nomAuteur = $auteurObj->getUsername();
         $auteur = htmlspecialchars($nomAuteur);
         $date = $this->touite->getDate();
+        $score = $this->touite->getScore();
+        $touiteId = $this->touite->getIdTouite();
+
 
        return <<<HTML
     <div class="touiteDetail">
@@ -32,9 +35,9 @@ class TouiteRendererLong extends TouiteRendererDefault{
             <p>{$texte}</p>
         </div>
         <div class="touite-footer">
-            <button class="dislike-button">Dislike</button>
-            <button class="like-button">Like</button>
-            <span class="score">Score : 0</span>
+            <a href="?action=dislike&touiteId={$touiteId}" class="dislike-button">Dislike</a>
+            <a href="?action=like&touiteId={$touiteId}" class="like-button">Like</a>
+            <span class="score">Score : {$score}</span>
             <p class="time">{$date}</p>
             <a href="?action=default">Retour</a>
             
