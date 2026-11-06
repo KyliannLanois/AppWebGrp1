@@ -35,8 +35,8 @@ class TouiteRendererLong extends TouiteRendererDefault{
             <p>{$texte}</p>
         </div>
         <div class="touite-footer">
-            <a href="?action=dislike&touiteId={$touiteId}" class="dislike-button">Dislike</a>
-            <a href="?action=like&touiteId={$touiteId}" class="like-button">Like</a>
+            <a href="?action=dislike&touiteId={$touiteId}&userId={$auteurObj->getIdUser()}" class="dislike-button">Dislike</a>
+            <a href="?action=like&touiteId={$touiteId}&userId={$auteurObj->getIdUser()}" class="like-button">Like</a>
             <span class="score">Score : {$score}</span>
             <p class="time">{$date}</p>
             <a href="?action=default">Retour</a>

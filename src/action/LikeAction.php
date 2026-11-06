@@ -10,7 +10,8 @@ class LikeAction extends Action
     {
         $repo = TouiteRepository::getInstance();
         $touiteId = $_GET['touiteId'];
-        $repo->likeTouite($touiteId);
+        $userId = $_GET['userId'];
+        $repo->likeTouite($touiteId, $userId);
 
         header("Location: ?action=display-touite&id={$touiteId}");
         exit();
