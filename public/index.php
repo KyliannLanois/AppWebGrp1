@@ -1,7 +1,8 @@
 <?php
-
+session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use touiteur\action\ConnexionAction;
 use touiteur\action\DisplayTouiteAction;
 use touiteur\repository\TouiteRepository;
 use touiteur\dispatch\Dispatcher;
@@ -19,6 +20,7 @@ try {
     $dispatcher->addRoute('add-touite', AddTouitesAction::class);
     $dispatcher->addRoute('display-touite', DisplayTouiteAction::class);
     $dispatcher->addRoute('DisplayTouiteOfUser', DisplayTouitesOfUserAction::class);
+    $dispatcher->addRoute('connexion', ConnexionAction::class);
 
     $dispatcher->run();
 

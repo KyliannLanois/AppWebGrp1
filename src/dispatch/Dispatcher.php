@@ -37,6 +37,11 @@ class Dispatcher
 
     private function renderPage(string $html): void
     {
+        if (isset($_SESSION['user'])){
+            $user = $_SESSION['user'];
+        } else {
+            $user = 'Connexion';
+        }
         echo <<<HTML
         <!DOCTYPE html>
         <html lang="fr">
@@ -51,7 +56,7 @@ class Dispatcher
             <a href="?action=default">MenuPrincipal</a>
             <a href="?action=add-touite">Ajouter touites</a>
             <a href="?action=menuAdmin">Menu Admin</a>
-            <a href="?action=connexion">Connexion</a>
+            <a href="?action=connexion">{$user}</a>
            </nav>
            </header>
            <main>
