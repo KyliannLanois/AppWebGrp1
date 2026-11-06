@@ -12,7 +12,7 @@ class Tag
     {
         $this->id_tag = $id_tag;
         $this->libelle = $libelle;
-        $this->description = $description;
+        $this->description = "Voilà ce qui concerne : {$libelle}";
     }
 
     public function getIdTag(): int
@@ -30,5 +30,19 @@ class Tag
         return $this->libelle;
     }
 
+    public function getTagInText(string $text): array{
+        $arrayTag = [];
+
+        $pattern ="/#(\w+)/u";
+
+        if(preg_match_all($pattern,$text,$matches)){
+            $libelles = $matches[0];
+        }
+
+        array_unique($arrayTag);
+
+
+        return $arrayTag;
+    }
 
 }
