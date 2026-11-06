@@ -331,11 +331,11 @@ class TouiteRepository {
     }
 
     public function calculerScore($idUser) : int {
-        $sql = "SELECT SUM(VALEUR) FROM evaluation WHERE id_user = :id_user";
+        $sql = "SELECT SUM(score) FROM touite WHERE id_user = :id_user";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id_user' => $idUser]);
         $row = $stmt->fetch();
-        return $row['SUM(VALEUR)'];
+        return $row['SUM(score)'];
     }
 
     public function likeTouite(int $idTouite, int $userId){

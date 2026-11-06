@@ -33,6 +33,13 @@ class ProfilAction extends Action
         }
 
         $html .= "</section>";
+
+        $html .= <<<HTML
+<section class="scoreProfil">
+<p>Votre score total est de : {$user->getScore()}</p>
+</section>
+HTML;
+
         return $html;
     }
 }
