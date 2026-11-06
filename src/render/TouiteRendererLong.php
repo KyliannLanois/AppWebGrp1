@@ -36,6 +36,7 @@ class TouiteRendererLong extends TouiteRendererDefault{
             <button class="like-button">Like</button>
             <span class="score">Score : 0</span>
             <p class="time">{$date}</p>
+            <a href="?action=default">Retour</a>
             
         </div>
 
