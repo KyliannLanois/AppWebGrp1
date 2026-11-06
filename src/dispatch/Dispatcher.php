@@ -55,13 +55,16 @@ class Dispatcher
             <nav>
             <a href="?action=default">MenuPrincipal</a>
             <a href="?action=add-touite">Ajouter touites</a>
-            <a href="?action=menuAdmin">Menu Admin</a>
+            
             <a href="?action=connexion">{$user}</a>
            </nav>
            </header>
            <main>
            $html;
            </main>
+           <footer>
+           <a href="?action=menuAdmin">Menu Admin</a>
+</footer>
            </body>
 HTML;
 
