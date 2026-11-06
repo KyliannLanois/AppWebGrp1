@@ -10,7 +10,12 @@ class DislikeAction extends Action
     {
         $repo = TouiteRepository::getInstance();
         $touiteId = $_GET['touiteId'];
-        $userId = $_GET['userId'];
+        if (!isset($_SESSION['user'])) {
+            header("Location: ?action=display-touite&id={$touiteId}");
+            exit();
+        }
+
+        $userId = $repo->getUser($_SESSION['user'])->getIdUser();
         $repo->dislikeTouite($touiteId, $userId);
 
         header("Location: ?action=display-touite&id={$touiteId}");

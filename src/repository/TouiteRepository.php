@@ -335,7 +335,7 @@ class TouiteRepository {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id_user' => $idUser]);
         $row = $stmt->fetch();
-        return $row['SUM(score)'];
+        return $row['SUM(score)'] ?? 0;
     }
 
     public function likeTouite(int $idTouite, int $userId){

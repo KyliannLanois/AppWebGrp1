@@ -38,6 +38,9 @@ class ProfilAction extends Action
 <section class="scoreProfil">
 <p>Votre score total est de : {$user->getScore()}</p>
 </section>
+<section class="deconnexion">
+<a href="?action=deconnexion">Se déconnecter</a>
+</section>
 HTML;
 
         return $html;

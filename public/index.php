@@ -3,6 +3,7 @@ session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use touiteur\action\ConnexionAction;
+use touiteur\action\DeconnecterAction;
 use touiteur\action\DislikeAction;
 use touiteur\action\DisplayTouiteAction;
 use touiteur\action\LikeAction;
@@ -27,6 +28,7 @@ try {
     $dispatcher->addRoute('profil', ProfilAction::class);
     $dispatcher->addRoute('like', LikeAction::class);
     $dispatcher->addRoute('dislike', DislikeAction::class);
+    $dispatcher->addRoute('deconnexion', DeconnecterAction::class);
     $dispatcher->run();
 
 
