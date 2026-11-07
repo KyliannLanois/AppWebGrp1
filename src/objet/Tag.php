@@ -8,7 +8,7 @@ class Tag
     private string $libelle;
     private string $description;
 
-    public function __construct(int $id_tag, string $libelle, string $description)
+    public function __construct(int $id_tag, string $libelle)
     {
         $this->id_tag = $id_tag;
         $this->libelle = $libelle;
@@ -30,19 +30,12 @@ class Tag
         return $this->libelle;
     }
 
-    public function getTagInText(string $text): array{
-        $arrayTag = [];
-
-        $pattern ="/#(\w+)/u";
-
-        if(preg_match_all($pattern,$text,$matches)){
-            $libelles = $matches[0];
+    public static function getTagInText(string $text): array {
+        $pattern = "/#(\w+)/u";
+        if (preg_match_all($pattern, $text, $matches)) {
+            return array_values(array_unique($matches[1]));
         }
-
-        array_unique($arrayTag);
-
-
-        return $arrayTag;
+        return [];
     }
 
 }

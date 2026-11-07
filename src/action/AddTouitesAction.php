@@ -3,6 +3,7 @@
 
 namespace touiteur\action;
 
+use touiteur\objet\Tag;
 use touiteur\repository\TouiteRepository;
 
 class AddTouitesAction extends Action {
@@ -23,9 +24,22 @@ class AddTouitesAction extends Action {
             //Pour gerer le username
             $user = $repo->getUser(trim($_POST['username']));
             $username = $user->getUsername();
+            $idTouite = $repo->addTouite($username, $texte);
 
+            //Gestion des tags
+            $Tags = Tag::getTagInText($texte);
 
-            $repo->addTouite($username, $texte);
+            foreach ($Tags as $Tag) {
+                // Créaation d'un tag tampon pour générer la description
+                $tagObj = new Tag(1,$Tag);
+                //add d'un tag avec sa description ( si le tag est déja présnet alors $id_tag sera égale a celui existant
+                $id_tag = $repo->addTag($Tag,$tagObj->getDescription());
+                // Link d'un tag au touite qui se crée
+                $repo->linkTouiteTag($idTouite,$id_tag);
+                // Link d'un tag a un utilisateur
+                $repo->linkTagUser($id_tag,$user->getIdUser());
+            }
+
 
             header('Location: ?action=default');
             exit();

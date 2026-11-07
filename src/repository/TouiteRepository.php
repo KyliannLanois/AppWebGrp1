@@ -110,42 +110,90 @@ class TouiteRepository {
 
     //TODO rajouter le systeme d'évaluation
 
-    public function addTag(string $libelle,string $description): string{
-        $libelle = trim($libelle);
+    public function addTag(string $libelle_tag,string $description): string{
+        $libelle_tag = trim($libelle_tag);
         $description = trim($description);
-        if($libelle === ''|| mb_strlen($libelle) > 50){
+        if($libelle_tag === ''|| mb_strlen($libelle_tag) > 50){
             throw new \InvalidArgumentException("Le libelle ne doit pas dépasser 50 caracteres");
         }
         if ($description === '' || mb_strlen($description) > 255){
             throw new \InvalidArgumentException("La description ne doit pas dépasser 255 caracteres");
         }
 
-        $sql = "INSERT INTO tag (libelle, description) VALUES (:libelle, :description)";
+        $id = $this->getTag($libelle_tag);
+        // Si le tag existe déjà, retourner son ID
+        if ($id !== -1) {
+            return $id;
+        }
+        // sinon ajout du tag
+        $sql = "INSERT INTO tag (libelle_tag, desc_tag) VALUES (:libelle_tag, :desc_tag)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'libelle' => $libelle,
-            'description' => $description
+            'libelle_tag' => $libelle_tag,
+            'desc_tag' => $description
         ]);
         $id = $this->pdo->lastInsertId();
         return $id;
     }
+    public function getTag(string $libelle_tag): int
+    {
+        $querySelect = "SELECT id_tag FROM tag WHERE libelle_tag = :libelle_tag";
+        $stmtSelect = $this->pdo->prepare($querySelect);
+        $stmtSelect->execute([':libelle_tag' => $libelle_tag]);
+        $tag = $stmtSelect->fetch();
 
-    public function linkTagUser(int $id_tag,int $id_user){
-        $sql = "INSERT INTO abonnement_tag (id_user, id_tag) VALUES (:id_tag, :id_user)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            'id_tag' => $id_tag,
-            'id_user' => $id_user
-        ]);
+        if ($tag) {
+            return (int)$tag['id_tag'];
+        }
+        return -1;
     }
 
-    public function linkTouiteTag(int $id_touite,int $id_tag){
-        $sql = "INSERT INTO touite_tag (id_touite, id_tag) VALUES (:id_touite, :id_tag)";
+    public function linkTagUser(int $id_tag, int $id_user):bool{
+        $sql = "SELECT COUNT(*) FROM abonnement_tag 
+            WHERE id_user = :id_user AND id_tag = :id_tag";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_user' => $id_user,
+            'id_tag' => $id_tag
+        ]);
+
+        if ($stmt->fetchColumn() > 0) {
+            return false;
+        }
+
+        $sql = "INSERT INTO abonnement_tag (id_user, id_tag) 
+            VALUES (:id_user, :id_tag)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_user' => $id_user,
+            'id_tag' => $id_tag
+        ]);
+
+        return true;
+    }
+
+    public function linkTouiteTag(int $id_touite, int $id_tag):bool{
+        $sql = "SELECT COUNT(*) FROM touite_tag 
+            WHERE id_touite = :id_touite AND id_tag = :id_tag";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'id_touite' => $id_touite,
             'id_tag' => $id_tag
         ]);
+
+        if ($stmt->fetchColumn() > 0) {
+            return false;
+        }
+
+        $sql = "INSERT INTO touite_tag (id_touite, id_tag) 
+            VALUES (:id_touite, :id_tag)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_touite' => $id_touite,
+            'id_tag' => $id_tag
+        ]);
+
+        return true;
     }
 
     public function addUser(string $username,?string $nom_user = null,?string $prenom_user=null,?string $email_user=null):string{
@@ -220,7 +268,6 @@ class TouiteRepository {
 
         return ($this->getTouites($rows));
     }
-
 
 
 
