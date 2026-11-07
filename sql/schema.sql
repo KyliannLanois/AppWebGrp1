@@ -38,6 +38,7 @@ texte_touite VARCHAR(235) NOT NULL,
 id_user INT NOT NULL,
 id_image INT,
 date_touite DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+score INT DEFAULT 0,
 CONSTRAINT fk_touite_user FOREIGN KEY (id_user) REFERENCES utilisateur(id_user),
 CONSTRAINT fk_touite_image FOREIGN KEY (id_image) REFERENCES image(id_image)
 );

@@ -13,7 +13,7 @@ class DisplayTouitesOfUserAction extends Action
     {
 
         $repo = TouiteRepository::getInstance();
-        $iduser = trim($_POST['id']);
+        $iduser = trim($_GET['id']);
         $user = $repo->getUserByID($iduser);
 
 

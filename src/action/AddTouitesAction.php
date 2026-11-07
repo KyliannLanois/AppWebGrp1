@@ -30,11 +30,16 @@ class AddTouitesAction extends Action {
             header('Location: ?action=default');
             exit();
         }
-        return $this->renderForm();
+        if (isset($_SESSION['user'])){
+            return $this->renderForm($_SESSION['user']);
+        } else{
+            return $this->renderForm('');
+        }
+
     }
 
 
-    private function renderForm(string $ancientexte = ''): string{
+    private function renderForm(string $ancientexte): string{
         $safeText = htmlspecialchars($ancientexte);
         return <<< HTML
         <section class="add-touite-section">
@@ -44,7 +49,7 @@ class AddTouitesAction extends Action {
                     <label for="username">Rentrer ci-dessous votre pseudo : </label><br>
                     <input type="text" id="username" name="username" maxlength="50" value="{$safeText}"><br>
                     <label for="texte">Votre message (235 caractères max, incluez vos #tags) :</label><br>
-                    <textarea id="texte" name="texte" rows="4" cols="50" maxlength="235" required>{$safeText}</textarea>
+                    <textarea id="texte" name="texte" rows="4" cols="50" maxlength="235" required></textarea>
                 </div>
                 <br>
                 <button type="submit">Touiter</button>
