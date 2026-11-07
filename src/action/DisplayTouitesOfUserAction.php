@@ -29,7 +29,7 @@ class DisplayTouitesOfUserAction extends Action
             $html .= "<p> Aucun touite pour le moment</p>";
         } else {
             foreach($touites as $touite){
-                $renderer = new TouiteRendererCompact($touite);
+                $renderer = new TouiteRendererCompact($touite,$repo);
                 $html .= $renderer->render();
             }
         }

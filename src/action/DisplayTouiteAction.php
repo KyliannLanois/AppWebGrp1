@@ -13,7 +13,7 @@ class DisplayTouiteAction extends Action{
         $repo = TouiteRepository::getInstance();
 
         $touite = $repo->getTouiteById((int) $_GET["id"]);
-        $renderer = new TouiteRendererLong($touite);
+        $renderer = new TouiteRendererLong($touite,$repo);
         $html = "";
         $html .= $renderer->render();
         $html .= "</section>";

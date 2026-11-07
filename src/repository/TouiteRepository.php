@@ -6,6 +6,7 @@ namespace touiteur\repository;
 
 use Exception;
 use PDO;
+use touiteur\objet\Tag;
 use touiteur\objet\Touite;
 use touiteur\objet\User;
 
@@ -110,7 +111,7 @@ class TouiteRepository {
 
     //TODO rajouter le systeme d'évaluation
 
-    public function addTag(string $libelle_tag,string $description): string{
+    public function addTag(string $libelle_tag,string $description): int{
         $libelle_tag = trim($libelle_tag);
         $description = trim($description);
         if($libelle_tag === ''|| mb_strlen($libelle_tag) > 50){
@@ -120,9 +121,11 @@ class TouiteRepository {
             throw new \InvalidArgumentException("La description ne doit pas dépasser 255 caracteres");
         }
 
-        $id = $this->getTag($libelle_tag);
+        $Tag = $this->getTag($libelle_tag);
+
         // Si le tag existe déjà, retourner son ID
-        if ($id !== -1) {
+        if ($Tag !== null) {
+            $id = $Tag->getIdTag();
             return $id;
         }
         // sinon ajout du tag
@@ -135,17 +138,28 @@ class TouiteRepository {
         $id = $this->pdo->lastInsertId();
         return $id;
     }
-    public function getTag(string $libelle_tag): int
+    public function getTag(string $libelle_tag): ?Tag
     {
-        $querySelect = "SELECT id_tag FROM tag WHERE libelle_tag = :libelle_tag";
+        $querySelect = "SELECT * FROM tag WHERE libelle_tag = :libelle_tag";
         $stmtSelect = $this->pdo->prepare($querySelect);
         $stmtSelect->execute([':libelle_tag' => $libelle_tag]);
         $tag = $stmtSelect->fetch();
 
         if ($tag) {
-            return (int)$tag['id_tag'];
+            return new Tag((int)$tag['id_tag'], $tag['libelle_tag']);
         }
-        return -1;
+        return null;
+    }
+
+    public function getTagById(int $id_Tag): ?Tag{
+        $querySelect = "SELECT * FROM tag WHERE id_tag = :id_tag";
+        $stmtSelect = $this->pdo->prepare($querySelect);
+        $stmtSelect->execute([':id_tag' => $id_Tag]);
+        $tag = $stmtSelect->fetch();
+        if ($tag) {
+            return new Tag((int)$tag['id_tag'], $tag['libelle_tag']);
+        }
+        return null;
     }
 
     public function linkTagUser(int $id_tag, int $id_user):bool{
@@ -267,7 +281,7 @@ class TouiteRepository {
 
 
         return ($this->getTouites($rows));
-    }
+    } //TODO Rajouter a la liste les tweets contenant le tag que l'utilisateur suis.
 
 
 
@@ -276,21 +290,27 @@ class TouiteRepository {
 
 
 
-    public function getListTouiteTag(Tag $tag): array ///TODO ajouter les tag (VRM dans la base)
+    public function getListTouiteTag(int $id_tag): array ///TODO ajouter les tag (VRM dans la base)
     {
+
+
 
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
-                   i.chemin_img
-            FROM touite t
-            WHERE t.id_user = :iduser
-            JOIN utilisateur u ON u.id_user = t.id_user
-            LEFT JOIN image i ON t.id_image = i.id_image
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
-            ORDER BY t.date_touite DESC";
+                   i.chemin_img FROM touite t
+                INNER JOIN touite_tag tt ON t.id_touite = tt.id_touite
+                INNER JOIN tag tag ON tt.id_tag = tag.id_tag
+                INNER JOIN utilisateur u ON t.id_user = u.id_user
+                LEFT JOIN image i ON t.id_image = i.id_image
+                WHERE tag.id_tag = :id_tag
+                GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+                ORDER BY t.date_touite DESC";
+
+
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'iduser' => $tag->getIdUser()
+            'id_tag' => $id_tag
         ]);
         $rows = $stmt->fetchAll();
 

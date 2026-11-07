@@ -5,6 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use touiteur\action\ConnexionAction;
 use touiteur\action\DeconnecterAction;
 use touiteur\action\DislikeAction;
+use touiteur\action\DisplayTagPage;
 use touiteur\action\DisplayTouiteAction;
 use touiteur\action\LikeAction;
 use touiteur\action\ProfilAction;
@@ -29,6 +30,7 @@ try {
     $dispatcher->addRoute('like', LikeAction::class);
     $dispatcher->addRoute('dislike', DislikeAction::class);
     $dispatcher->addRoute('deconnexion', DeconnecterAction::class);
+    $dispatcher->addRoute('tagPage', DisplayTagPage::class);
     $dispatcher->run();
 
 

@@ -32,7 +32,7 @@ class TouiteRendererLong extends TouiteRendererDefault{
             </div>
         </div>
         <div class="touite-content">
-            <p>{$texte}</p>
+            <p>{$this->replaceTagInText($texte)}</p>
         </div>
         <div class="touite-footer">
             <a href="?action=dislike&touiteId={$touiteId}" class="dislike-button">Dislike</a>
