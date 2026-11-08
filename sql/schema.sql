@@ -97,3 +97,54 @@ ON DUPLICATE KEY UPDATE
     prenom_user=VALUES(prenom_user),
     email_user=VALUES(email_user),
     nb_touites=VALUES(nb_touites);
+
+
+INSERT INTO `tag` (`id_tag`, `libelle_tag`, `desc_tag`) VALUES
+(1, 'dev', 'Discussions autour du dev et du code'),
+(2, 'php', 'Astuces PDO, Composer et OOP'),
+(3, 'docker', 'Conteneurs et microservices'),
+(4, 'iut', 'Vie de promo et projets universitaires'),
+(5, 'cours', 'Révisions et comptes-rendus')
+ON DUPLICATE KEY UPDATE
+libelle_tag=VALUES(libelle_tag),
+desc_tag=VALUES(desc_tag);
+
+
+
+
+-- 1. Insertion des Touites
+INSERT INTO `touite` (`id_touite`, `texte_touite`, `id_user`, `id_image`, `date_touite`, `score`) VALUES
+(1, 'Premier touite sur la plateforme ! Tout tourne sous Docker.', 1, NULL, '2026-11-08 10:00:00', 3),
+(2, 'Les controleurs et le dispatcher PSR fonctionnent enfin.', 1, NULL, '2026-11-08 10:30:00', 2),
+(3, 'Pensez a bien faire composer dump-autoload apres avoir cree vos classes.', 2, NULL, '2026-11-08 11:15:00', 4),
+(4, 'Est-ce que le systeme d''abonnement aux tags est valide ?', 4, NULL, '2026-11-08 11:45:00', -1)
+ON DUPLICATE KEY UPDATE
+texte_touite=VALUES(texte_touite),
+id_user=VALUES(id_user),
+id_image=VALUES(id_image),
+date_touite=VALUES(date_touite),
+score=VALUES(score);
+
+-- 2. Liaison Touite <-> Tag
+INSERT INTO `touite_tag` (`id_touite`, `id_tag`) VALUES
+(1, 1),
+(1, 4),
+(2, 1),
+(2, 2),
+(3, 1),
+(3, 3),
+(4, 4),
+(4, 5)
+ON DUPLICATE KEY UPDATE
+id_touite=VALUES(id_touite),
+id_tag=VALUES(id_tag);
+
+-- 3. Abonnements Utilisateurs aux Tags
+INSERT INTO `abonnement_tag` (`id_user`, `id_tag`) VALUES
+(1, 1),
+(1, 2),
+(2, 3),
+(4, 4)
+ON DUPLICATE KEY UPDATE
+id_user=VALUES(id_user),
+id_tag=VALUES(id_tag);
