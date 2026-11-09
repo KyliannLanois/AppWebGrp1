@@ -25,10 +25,11 @@ class DisplayTouitesOfUserAction extends Action
             $touites = $repo->getListTouiteUserInverse($iduser);
         }
 
-        $html = "<section class='touite-action'>";
-        $html .= "<h2>Touites de ".$username."</h2><br>";
-
-        $html .= <<<HTML
+        $html = <<<HTML
+        <section class='touite-action'>
+        <h2>Touites de ".$username."</h2>
+         <a href="?action=abonnementUser&idFollowed={$iduser}">{$repo->estAbonne($iduser)}</a>
+        <br><br>
         <details>
         <summary>Trier par</summary>
         <a href="?action=DisplayTouiteOfUser&id=$iduser&ordre=desc">Plus récents d'abord</a><br>
@@ -47,6 +48,10 @@ class DisplayTouitesOfUserAction extends Action
         }
 
         $html .= "</section>";
+        $html .= <<<HTML
+        <br><br>
+        <a href="{$_SERVER['HTTP_REFERER']}">Retour</a>
+        HTML;
         return $html;
     }
 

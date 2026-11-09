@@ -3,6 +3,8 @@
 
 namespace touiteur\render;
 
+use touiteur\repository\TouiteRepository;
+
 class TouiteRendererLong extends TouiteRendererDefault{
 
     public function render(int $selector = 1): string
@@ -21,14 +23,16 @@ class TouiteRendererLong extends TouiteRendererDefault{
         $date = $this->touite->getDate();
         $score = $this->touite->getScore();
         $touiteId = $this->touite->getIdTouite();
-
+        $idUser = $auteurObj->getIdUser();
+        $repo = TouiteRepository::getInstance();
 
        return <<<HTML
     <div class="touiteDetail">
         <div class="touite-header">
           <br>
             <div class="user-info">
-                <a href="?action=DisplayTouiteOfUser&id={$auteurObj->getIdUser()}">{$auteur}</a>
+                <a href="?action=DisplayTouiteOfUser&id={$idUser}">{$auteur}</a>
+                <a href="?action=abonnementUser&idFollowed={$auteurObj->getIdUser()}&touiteId={$touiteId}">{$repo->estAbonne($idUser)}</a>
             </div>
         </div>
         <div class="touite-content">
@@ -39,7 +43,7 @@ class TouiteRendererLong extends TouiteRendererDefault{
             <a href="?action=like&touiteId={$touiteId}" class="like-button">Like</a>
             <span class="score">Score : {$score}</span>
             <p class="time">{$date}</p>
-            <a href="?action=default">Retour</a>
+            <a href="{$_SERVER['HTTP_REFERER']}">Retour</a>
             
         </div>
 

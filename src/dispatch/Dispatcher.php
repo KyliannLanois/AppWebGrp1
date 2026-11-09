@@ -59,7 +59,7 @@ class Dispatcher
        HTML;
         if (isset($_SESSION['user'])){
             $html .= <<<HTML
-                <a href="?action=profil">{$user}</a>
+                <a href="?action=pagePerso">{$user}</a>
                 HTML;
         } else {
             $html .= <<<HTML

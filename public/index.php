@@ -2,12 +2,15 @@
 session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use touiteur\action\AbonnerTagAction;
+use touiteur\action\AbonnerUserAction;
 use touiteur\action\ConnexionAction;
 use touiteur\action\DeconnecterAction;
 use touiteur\action\DislikeAction;
 use touiteur\action\DisplayTagPage;
 use touiteur\action\DisplayTouiteAction;
 use touiteur\action\LikeAction;
+use touiteur\action\PagePersoAction;
 use touiteur\action\ProfilAction;
 use touiteur\repository\TouiteRepository;
 use touiteur\dispatch\Dispatcher;
@@ -31,6 +34,9 @@ try {
     $dispatcher->addRoute('dislike', DislikeAction::class);
     $dispatcher->addRoute('deconnexion', DeconnecterAction::class);
     $dispatcher->addRoute('tagPage', DisplayTagPage::class);
+    $dispatcher->addRoute('abonnementUser', AbonnerUserAction::class);
+    $dispatcher->addRoute('abonnementTag', AbonnerTagAction::class);
+    $dispatcher->addRoute('pagePerso', PagePersoAction::class);
     $dispatcher->run();
 
 

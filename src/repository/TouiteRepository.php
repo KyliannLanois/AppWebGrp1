@@ -321,7 +321,31 @@ class TouiteRepository {
         return ($this->getTouites($rows));
     }
 
-    //TODO Rajouter a la liste les tweets contenant le tag que l'utilisateur suis.
+    public function getTouiteAbonnement(int $iduser) : array{
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+            u.id_user, u.username, u.nom_user, u.prenom_user, u.email_user,
+            i.chemin_img, t.score
+            FROM touite t
+            INNER JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            WHERE t.id_user IN (SELECT id_followed FROM abonnement_user WHERE id_follower = :iduser1)
+               OR t.id_touite IN (SELECT tt.id_touite
+                                  FROM touite_tag tt
+                                  INNER JOIN abonnement_tag at ON at.id_tag = tt.id_tag
+                                  WHERE at.id_user = :iduser2)
+            ORDER BY t.date_touite DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'iduser1' => $iduser,
+            'iduser2' => $iduser
+        ]);
+        $rows = $stmt->fetchAll();
+
+        return $this->getTouites($rows);
+    }
+
+
 
 
 
@@ -522,7 +546,63 @@ class TouiteRepository {
         }
     }
 
+    public function abonnerUser(int $idFollower,int $idFollowed) : void{
+        $sql = "SELECT * FROM abonnement_user WHERE id_follower = :idFollower AND id_followed = :idFollowed";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['idFollower' => $idFollower, 'idFollowed' => $idFollowed]);
+        $row = $stmt->fetch();
 
+        if (!$row) {
+            $sql = "INSERT INTO abonnement_user (id_follower, id_followed) VALUES (:idFollower, :idFollowed)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idFollower' => $idFollower, 'idFollowed' => $idFollowed]);
+        } else {
+            $sql = "DELETE FROM abonnement_user WHERE id_follower = :idFollower AND id_followed = :idFollowed";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idFollower' => $idFollower, 'idFollowed' => $idFollowed]);
+        }
+    }
 
+    public function abonnerTag(int $idUser,int $idTag) : void{
+        $sql = "SELECT * FROM abonnement_tag WHERE id_user = :idUser AND id_tag = :idTag";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['idUser' => $idUser, 'idTag' => $idTag]);
+        $row = $stmt->fetch();
 
+        if (!$row) {
+            $sql = "INSERT INTO abonnement_tag (id_user, id_tag) VALUES (:idUser, :idTag)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idUser' => $idUser, 'idTag' => $idTag]);
+        } else {
+            $sql = "DELETE FROM abonnement_tag WHERE id_user = :idUser AND id_tag = :idTag";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idUser' => $idUser, 'idTag' => $idTag]);
+        }
+    }
+
+    public function estAbonne(int $idFollowed) : string {
+        if(isset($_SESSION['user'])){
+            $sql = "SELECT * FROM abonnement_user WHERE id_follower = :idFollower AND id_followed = :idFollowed";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idFollower' => $this->getUser($_SESSION['user'])->getIdUser(), 'idFollowed' => $idFollowed]);
+            $row = $stmt->fetch();
+            if($row){
+                return "abonné(e)";
+            }
+        }
+        return "s'abonner";
+    }
+
+    public function suisTag(int $idTag) : string{
+        if(isset($_SESSION['user'])){
+            $sql = "SELECT * FROM abonnement_tag WHERE id_user = :idUser AND id_tag = :idTag";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idUser' => $this->getUser($_SESSION['user'])->getIdUser(), 'idTag' => $idTag]);
+            $row = $stmt->fetch();
+            if($row){
+                return "suivis";
+            }
+        }
+        return "suivre";
+    }
 }

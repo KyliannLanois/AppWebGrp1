@@ -20,8 +20,14 @@ class DisplayTagPage extends Action
 
         $touites = $repo->getListTouiteTag($id_tag);
 
-        $html = "<section class='touite-action'>";
-        $html .= "<h2>Touite contenant le tag : ". ucfirst($libelle_tag)."</h2>";
+        $tagTitre = htmlspecialchars(ucfirst($libelle_tag));
+        $html = <<<HTML
+            <section class='touite-action'>
+            <h2>Touite contenant le tag : {$tagTitre}."</h2>
+            <a href="?action=abonnementTag&userId={$tagObj->getIdTag()}&tagId={$id_tag}">{$repo->suisTag($id_tag)}</a>
+            <br><br>
+HTML;
+
 
 
         if (empty($touites)) {
@@ -34,6 +40,11 @@ class DisplayTagPage extends Action
         }
 
         $html .= "</section>";
+
+        $html .= <<<HTML
+        <br><br>
+        <a href="{$_SERVER['HTTP_REFERER']}">Retour</a>
+        HTML;
         return $html;
     }
 
