@@ -19,10 +19,22 @@ class DisplayTouitesOfUserAction extends Action
 
         $username = $user->getUsername();
 
-        $touites = $repo->getListTouiteUser($iduser);
+        if (isset($_GET['ordre']) && $_GET['ordre'] == 'asc') {
+            $touites = $repo->getListTouiteUser($iduser);
+        } else {
+            $touites = $repo->getListTouiteUserInverse($iduser);
+        }
 
         $html = "<section class='touite-action'>";
-        $html .= "<h2>Touites de ".$username."</h2>";
+        $html .= "<h2>Touites de ".$username."</h2><br>";
+
+        $html .= <<<HTML
+        <details>
+        <summary>Trier par</summary>
+        <a href="?action=DisplayTouiteOfUser&id=$iduser&ordre=desc">Plus récents d'abord</a><br>
+        <a href="?action=DisplayTouiteOfUser&id=$iduser&ordre=asc">Plus anciens d'abord</a>
+        </details> <br>
+        HTML;
 
 
         if (empty($touites)) {

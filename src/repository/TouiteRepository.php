@@ -76,6 +76,22 @@ class TouiteRepository {
         return ($this->getTouites($rows));
     }
 
+    public function getAllTouitesInverse(): array{
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+                   u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
+                   i.chemin_img, t.score
+            FROM touite t
+            JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+            ORDER BY t.date_touite ASC";
+
+        $stmt =     $this->pdo->query($sql);
+        $rows = $stmt->fetchAll();
+
+        return ($this->getTouites($rows));
+    }
+
 
     public function addTouite(string $username, string $texte, ?int $id_image = null): string{
 
@@ -281,7 +297,31 @@ class TouiteRepository {
 
 
         return ($this->getTouites($rows));
-    } //TODO Rajouter a la liste les tweets contenant le tag que l'utilisateur suis.
+    }
+
+    public function getListTouiteUserInverse(int $iduser): array
+    {
+
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+                   u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
+                   i.chemin_img
+            FROM touite t
+            JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            WHERE t.id_user = :iduser
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            ORDER BY t.date_touite ASC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'iduser' => $iduser
+        ]);
+        $rows = $stmt->fetchAll();
+
+
+        return ($this->getTouites($rows));
+    }
+
+    //TODO Rajouter a la liste les tweets contenant le tag que l'utilisateur suis.
 
 
 
@@ -405,7 +445,8 @@ class TouiteRepository {
         return $row['SUM(score)'] ?? 0;
     }
 
-    public function likeTouite(int $idTouite, int $userId){
+    public function likeTouite(int $idTouite, int $userId): void
+    {
         $sql = "SELECT valeur FROM evaluation
         WHERE id_user = :id_user AND id_touite = :id_touite";
         $stmt = $this->pdo->prepare($sql);
@@ -442,7 +483,8 @@ class TouiteRepository {
             }
         }
     }
-    public function dislikeTouite(int $idTouite, int $userId){
+    public function dislikeTouite(int $idTouite, int $userId): void
+    {
         $sql = "SELECT valeur FROM evaluation
         WHERE id_user = :id_user AND id_touite = :id_touite";
         $stmt = $this->pdo->prepare($sql);

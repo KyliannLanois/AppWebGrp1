@@ -26,9 +26,9 @@ class TouiteRendererLong extends TouiteRendererDefault{
        return <<<HTML
     <div class="touiteDetail">
         <div class="touite-header">
-          
+          <br>
             <div class="user-info">
-                <p class="username">{$auteur}</p>
+                <a href="?action=DisplayTouiteOfUser&id={$auteurObj->getIdUser()}">{$auteur}</a>
             </div>
         </div>
         <div class="touite-content">
