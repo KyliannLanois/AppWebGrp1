@@ -148,3 +148,16 @@ INSERT INTO `abonnement_tag` (`id_user`, `id_tag`) VALUES
 ON DUPLICATE KEY UPDATE
 id_user=VALUES(id_user),
 id_tag=VALUES(id_tag);
+
+-- 4. Évaluations des touites par les utilisateurs
+INSERT INTO `evaluation` (`id_user`, `id_touite`, `valeur`) VALUES
+    (2, 1, 1),
+    (3, 1, 1),
+    (4, 1, 1),
+    (1, 2, 1),
+    (3, 2, 1),
+    (2, 3, 1),
+    (4, 3, 1),
+    (1, 4, -1)
+    ON DUPLICATE KEY UPDATE
+        valeur=VALUES(valeur);
