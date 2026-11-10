@@ -9,19 +9,31 @@ class HomeAction extends Action {
 
     public function execute(): string{
         $repo = TouiteRepository::getInstance();
-        if (isset($_GET['ordre']) && $_GET['ordre'] == 'asc') {
-            $touites = $repo->getAllTouitesInverse();
-        } else {
-            $touites = $repo->getAllTouites();
+
+
+        $ordre = (isset($_GET['ordre']) && $_GET['ordre'] === 'asc') ? 'asc' : 'desc';
+        $page = isset($_GET['ordre']) ? (int)$_GET['page'] : 1;
+        if ($page <1) {
+            $page = 1;
         }
+
+        $limit = 20;
+        $totalTouites = $repo->countTouites();
+        $totalPages = max(1,(int)ceil($totalTouites / $limit));
+
+        if ($page>$totalPages){
+            $page=$totalPages;
+            }
+
+        $touites = $repo->getTouitesPages($page, $limit, $ordre);
 
         $html = "<section class='touite-action'>";
         $html .= "<h2>Derniers touites publiés</h2>";
         $html .= <<<HTML
         <details>
         <summary>Trier par</summary>
-        <a href="?action=home&ordre=desc">Plus récents d'abord</a><br>
-        <a href="?action=home&ordre=asc">Plus anciens d'abord</a>
+            <a href="?action=home&ordre=desc&page=1">Plus récents d'abord</a><br>
+            <a href="?action=home&ordre=asc&page=1">Plus anciens d'abord</a>
         </details> <br>
         HTML;
 
@@ -33,6 +45,22 @@ class HomeAction extends Action {
                 $renderer = new TouiteRendererCompact($touite,$repo);
                 $html .= $renderer->render();
             }
+
+            $html .= "<nav class='pagination' style='margin-top: 20px; display: flex; gap: 10px; align-items: center;'>";
+
+            if ($page > 1){
+                $prev = $page - 1;
+                $html .= "<a href='?action=home&ordre={$ordre}&page={$prev}'>&laquo; Précédent</a>";
+            }
+
+            $html .= "<span>Page {$page} sur {$totalPages}</span>";
+
+            if ($page < $totalPages) {
+                $next = $page + 1;
+                $html .= "<a href='?action=home&ordre={$ordre}&page={$next}'>Suivant &raquo;</a>";
+            }
+
+            $html .= "</nav>";
         }
 
         $html .= "</section>";

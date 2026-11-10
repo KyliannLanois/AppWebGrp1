@@ -618,4 +618,74 @@ class TouiteRepository {
         return $stmt->fetchAll();
 
     }
+
+    public function countTouites(): int{
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM touite");
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function countTouitesAbonnement(int $id_user): int {
+        $sql = "SELECT COUNT(DISTINCT t.id_touite)
+            FROM touite t
+            LEFT JOIN touite_tag tt ON t.id_touite = tt.id_touite
+            WHERE t.id_user IN (SELECT id_followed FROM abonnement_user WHERE id_follower = :id_user)
+               OR tt.id_tag IN (SELECT id_tag FROM abonnement_tag WHERE id_user = :id_user)";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id_user' => $id_user]);
+        return (int)$stmt->fetchColumn();
+    }
+
+
+    public function getTouitesPages(int $page=1, int $limit = 20): array
+    {
+        $page = max(1, $page);
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+                   u.id_user, u.nb_touites, u.username, u.nom_user, u.prenom_user, u.email_user,
+                   i.chemin_img
+            FROM touite t
+            JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user, u.nb_touites, u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            ORDER BY t.date_touite DESC
+            LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll();
+        return $this->getTouites($rows);
+    }
+
+    public function getTouiteAbonnementPage(int $id_user, int $page = 1, int $limit = 20): array
+    {
+        $page = max(1, $page);
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+                   u.id_user, u.nb_touites, u.username, u.nom_user, u.prenom_user, u.email_user,
+                   i.chemin_img
+            FROM touite t
+            JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            LEFT JOIN touite_tag tt ON t.id_touite = tt.id_touite
+            WHERE t.id_user IN (SELECT id_followed FROM abonnement_user WHERE id_follower = :id_user)
+               OR tt.id_tag IN (SELECT id_tag FROM abonnement_tag WHERE id_user = :id_user)
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user, u.nb_touites, u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            ORDER BY t.date_touite DESC
+            LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':id_user', $id_user, \PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll();
+        return $this->getTouites($rows);
+    }
 }
