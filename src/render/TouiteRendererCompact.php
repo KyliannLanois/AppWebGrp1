@@ -16,22 +16,24 @@ class TouiteRendererCompact extends TouiteRendererDefault{
         $auteurObj = $this->touite->getAuteur();
         $nomAuteur = $auteurObj->getUsername();
         $auteur = htmlspecialchars($nomAuteur);
-
-        //$score=$this->touite->getScore(); //TODO faire le score
-
+        $score = $this->touite->getScore();
+        $touiteId = $this->touite->getIdTouite();
         return <<<HTML
         <article class="touite-card touite-compact">
             <div class="touite-header">
                 <a href="?action=DisplayTouiteOfUser&id={$auteurObj->getIdUser()}">{$auteur}</a>
             </div>
-            <p class="touite-content">{$texte}</p>
+            <p class="touite-content">{$this->replaceTagInText($texte)}</p>
+            
             <div class="touite-footer">
                 
+                <span class="score">Score : {$score}</span><br>
                 <a href="?action=display-touite&id={$id}">Voir le détail</a>
             </div>
         </article>
+        <br>
 HTML;
-    } // TODO a rajouter ça <span>Score : {$score}</span> |
+    } //TODO Modifier le compact ppour remttre le like et dislike, mais faut modifier LikeAction et dislike pour qu'il nous laisse sur la page courante quand on like ou dislike ( actuellement like et dilike emmene vers le display-touite
 
     public function renderLong(): string
     {

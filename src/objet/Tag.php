@@ -8,11 +8,11 @@ class Tag
     private string $libelle;
     private string $description;
 
-    public function __construct(int $id_tag, string $libelle, string $description)
+    public function __construct(int $id_tag, string $libelle)
     {
         $this->id_tag = $id_tag;
         $this->libelle = $libelle;
-        $this->description = $description;
+        $this->description = "Voilà ce qui concerne : {$libelle}";
     }
 
     public function getIdTag(): int
@@ -30,5 +30,12 @@ class Tag
         return $this->libelle;
     }
 
+    public static function getTagInText(string $text): array {
+        $pattern = "/#(\w+)/u";
+        if (preg_match_all($pattern, $text, $matches)) {
+            return array_values(array_unique($matches[1]));
+        }
+        return [];
+    }
 
 }

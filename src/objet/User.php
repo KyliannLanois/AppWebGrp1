@@ -2,6 +2,8 @@
 
 namespace touiteur\objet;
 
+use touiteur\repository\TouiteRepository;
+
 class User
 {
     private int $id_user;
@@ -55,5 +57,10 @@ class User
     public function getUsername(): ?string
     {
         return $this->username;
+    }
+
+    public function getScore(): ?int {
+        $repository = TouiteRepository::getInstance();
+        return $repository->calculerScore($this->id_user);
     }
 }

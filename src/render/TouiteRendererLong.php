@@ -3,6 +3,8 @@
 
 namespace touiteur\render;
 
+use touiteur\repository\TouiteRepository;
+
 class TouiteRendererLong extends TouiteRendererDefault{
 
     public function render(int $selector = 1): string
@@ -13,25 +15,35 @@ class TouiteRendererLong extends TouiteRendererDefault{
     public function renderLong(): string
     {
 
-        //TODO modifier en fonction de la base de données
+
+        $texte =htmlspecialchars($this->touite->getContenu());
+        $auteurObj = $this->touite->getAuteur();
+        $nomAuteur = $auteurObj->getUsername();
+        $auteur = htmlspecialchars($nomAuteur);
+        $date = $this->touite->getDate();
+        $score = $this->touite->getScore();
+        $touiteId = $this->touite->getIdTouite();
+        $idUser = $auteurObj->getIdUser();
+        $repo = TouiteRepository::getInstance();
 
        return <<<HTML
     <div class="touiteDetail">
         <div class="touite-header">
-          
+          <br>
             <div class="user-info">
-                <span class="username">Username</span>
-                <span class="handle">@handle</span>
+                <a href="?action=DisplayTouiteOfUser&id={$idUser}">{$auteur}</a>
+                <a href="?action=abonnementUser&idFollowed={$auteurObj->getIdUser()}&touiteId={$touiteId}">{$repo->estAbonne($idUser)}</a>
             </div>
         </div>
         <div class="touite-content">
-            <p>This is a sample touite content. It can contain text, images, or other media.</p>
+            <p>{$this->replaceTagInText($texte)}</p>
         </div>
         <div class="touite-footer">
-            <span class="score">Score : 0</span>
-            <button class="dislike-button">Dislike</button>
-            <button class="like-button">Like</button>
-            <span class="timestamp">date</span>
+            <a href="?action=dislike&touiteId={$touiteId}" class="dislike-button">Dislike</a>
+            <a href="?action=like&touiteId={$touiteId}" class="like-button">Like</a>
+            <span class="score">Score : {$score}</span>
+            <p class="time">{$date}</p>
+            <a href="{$_SERVER['HTTP_REFERER']}">Retour</a>
             
         </div>
 

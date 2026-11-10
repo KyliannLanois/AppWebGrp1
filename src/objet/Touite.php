@@ -13,7 +13,9 @@ class Touite
 
     private ?array $tags;
 
-    public function __construct(int $id_touite, User $auteur, string $date, string $contenu, ?string $image, ?array $tags)
+    private int $score;
+
+    public function __construct(int $id_touite, User $auteur, string $date, string $contenu, ?string $image, ?array $tags,int $score = 0)
     {
         $this->id_touite = $id_touite;
         $this->auteur = $auteur;
@@ -21,6 +23,8 @@ class Touite
         $this->contenu = $contenu;
         $this->image = $image;
         $this->tags = $tags;
+        $this->score = $score;
+
     }
 
     public function getImage(): string
@@ -56,6 +60,11 @@ class Touite
     public function getAuteur(): User
     {
         return $this->auteur;
+    }
+
+    public function getScore(): int
+    {
+        return $this->score;
     }
 
 

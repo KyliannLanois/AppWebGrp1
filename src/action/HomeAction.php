@@ -9,17 +9,28 @@ class HomeAction extends Action {
 
     public function execute(): string{
         $repo = TouiteRepository::getInstance();
-        $touites = $repo->getAllTouites();
+        if (isset($_GET['ordre']) && $_GET['ordre'] == 'asc') {
+            $touites = $repo->getAllTouitesInverse();
+        } else {
+            $touites = $repo->getAllTouites();
+        }
 
         $html = "<section class='touite-action'>";
         $html .= "<h2>Derniers touites publiés</h2>";
+        $html .= <<<HTML
+        <details>
+        <summary>Trier par</summary>
+        <a href="?action=home&ordre=desc">Plus récents d'abord</a><br>
+        <a href="?action=home&ordre=asc">Plus anciens d'abord</a>
+        </details> <br>
+        HTML;
 
 
         if (empty($touites)) {
             $html .= "<p> Aucun touite pour le moment</p>";
         } else {
             foreach($touites as $touite){
-                $renderer = new TouiteRendererCompact($touite);
+                $renderer = new TouiteRendererCompact($touite,$repo);
                 $html .= $renderer->render();
             }
         }

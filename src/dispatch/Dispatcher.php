@@ -30,14 +30,19 @@ class Dispatcher
 
         $class  = $this->actions[$this->action];
         $action = new $class();
-        $html   = $action->execute();   // on récupère le HTML
+        $main   = $action->execute();   // on récupère le HTML
 
-        $this->renderPage($html);       // c'est renderPage qui fait le echo
+        $this->renderPage($main);       // c'est renderPage qui fait le echo
     }
 
-    private function renderPage(string $html): void
+    private function renderPage(string $main): void
     {
-        echo <<<HTML
+        if (isset($_SESSION['user'])){
+            $user = $_SESSION['user'];
+        } else {
+            $user = 'Connexion';
+        }
+        $html = <<<HTML
         <!DOCTYPE html>
         <html lang="fr">
         <head>
@@ -56,18 +61,32 @@ class Dispatcher
             
             <nav>
             <a href="?action=add-touite">Ajouter touites</a>
-            <a href="?action=menuAdmin">Menu Admin</a>
-            <a href="?action=connexion">Connexion</a>
+
+       HTML;
+        if (isset($_SESSION['user'])){
+            $html .= <<<HTML
+                <a href="?action=pagePerso">{$user}</a>
+                HTML;
+        } else {
+            $html .= <<<HTML
+                <a href="?action=connexion">{$user}</a>
+                HTML;
+        }
+
+        $html .= <<<HTML
            </nav>
 </div>
            </header>
            <main>
-           $html;
+           $main
            </main>
            </div>
+           <footer>
+           <a href="?action=connexionAdmin">Menu Admin</a>
+            </footer>
            </body>
 HTML;
-
+    echo $html;
     }
 
 }

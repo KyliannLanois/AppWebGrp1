@@ -6,6 +6,7 @@ namespace touiteur\repository;
 
 use Exception;
 use PDO;
+use touiteur\objet\Tag;
 use touiteur\objet\Touite;
 use touiteur\objet\User;
 
@@ -62,12 +63,28 @@ class TouiteRepository {
     public function getAllTouites(): array{
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
-                   i.chemin_img
+                   i.chemin_img, t.score
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
             ORDER BY t.date_touite DESC";
+
+        $stmt =     $this->pdo->query($sql);
+        $rows = $stmt->fetchAll();
+
+        return ($this->getTouites($rows));
+    }
+
+    public function getAllTouitesInverse(): array{
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+                   u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
+                   i.chemin_img, t.score
+            FROM touite t
+            JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+            ORDER BY t.date_touite ASC";
 
         $stmt =     $this->pdo->query($sql);
         $rows = $stmt->fetchAll();
@@ -110,42 +127,103 @@ class TouiteRepository {
 
     //TODO rajouter le systeme d'évaluation
 
-    public function addTag(string $libelle,string $description): string{
-        $libelle = trim($libelle);
+    public function addTag(string $libelle_tag,string $description): int{
+        $libelle_tag = trim($libelle_tag);
         $description = trim($description);
-        if($libelle === ''|| mb_strlen($libelle) > 50){
+        if($libelle_tag === ''|| mb_strlen($libelle_tag) > 50){
             throw new \InvalidArgumentException("Le libelle ne doit pas dépasser 50 caracteres");
         }
         if ($description === '' || mb_strlen($description) > 255){
             throw new \InvalidArgumentException("La description ne doit pas dépasser 255 caracteres");
         }
 
-        $sql = "INSERT INTO tag (libelle, description) VALUES (:libelle, :description)";
+        $Tag = $this->getTag($libelle_tag);
+
+        // Si le tag existe déjà, retourner son ID
+        if ($Tag !== null) {
+            $id = $Tag->getIdTag();
+            return $id;
+        }
+        // sinon ajout du tag
+        $sql = "INSERT INTO tag (libelle_tag, desc_tag) VALUES (:libelle_tag, :desc_tag)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'libelle' => $libelle,
-            'description' => $description
+            'libelle_tag' => $libelle_tag,
+            'desc_tag' => $description
         ]);
         $id = $this->pdo->lastInsertId();
         return $id;
     }
+    public function getTag(string $libelle_tag): ?Tag
+    {
+        $querySelect = "SELECT * FROM tag WHERE libelle_tag = :libelle_tag";
+        $stmtSelect = $this->pdo->prepare($querySelect);
+        $stmtSelect->execute([':libelle_tag' => $libelle_tag]);
+        $tag = $stmtSelect->fetch();
 
-    public function linkTagUser(int $id_tag,int $id_user){
-        $sql = "INSERT INTO abonnement_tag (id_user, id_tag) VALUES (:id_tag, :id_user)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            'id_tag' => $id_tag,
-            'id_user' => $id_user
-        ]);
+        if ($tag) {
+            return new Tag((int)$tag['id_tag'], $tag['libelle_tag']);
+        }
+        return null;
     }
 
-    public function linkTouiteTag(int $id_touite,int $id_tag){
-        $sql = "INSERT INTO touite_tag (id_touite, id_tag) VALUES (:id_touite, :id_tag)";
+    public function getTagById(int $id_Tag): ?Tag{
+        $querySelect = "SELECT * FROM tag WHERE id_tag = :id_tag";
+        $stmtSelect = $this->pdo->prepare($querySelect);
+        $stmtSelect->execute([':id_tag' => $id_Tag]);
+        $tag = $stmtSelect->fetch();
+        if ($tag) {
+            return new Tag((int)$tag['id_tag'], $tag['libelle_tag']);
+        }
+        return null;
+    }
+
+    public function linkTagUser(int $id_tag, int $id_user):bool{
+        $sql = "SELECT COUNT(*) FROM abonnement_tag 
+            WHERE id_user = :id_user AND id_tag = :id_tag";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_user' => $id_user,
+            'id_tag' => $id_tag
+        ]);
+
+        if ($stmt->fetchColumn() > 0) {
+            return false;
+        }
+
+        $sql = "INSERT INTO abonnement_tag (id_user, id_tag) 
+            VALUES (:id_user, :id_tag)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_user' => $id_user,
+            'id_tag' => $id_tag
+        ]);
+
+        return true;
+    }
+
+    public function linkTouiteTag(int $id_touite, int $id_tag):bool{
+        $sql = "SELECT COUNT(*) FROM touite_tag 
+            WHERE id_touite = :id_touite AND id_tag = :id_tag";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'id_touite' => $id_touite,
             'id_tag' => $id_tag
         ]);
+
+        if ($stmt->fetchColumn() > 0) {
+            return false;
+        }
+
+        $sql = "INSERT INTO touite_tag (id_touite, id_tag) 
+            VALUES (:id_touite, :id_tag)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_touite' => $id_touite,
+            'id_tag' => $id_tag
+        ]);
+
+        return true;
     }
 
     public function addUser(string $username,?string $nom_user = null,?string $prenom_user=null,?string $email_user=null):string{
@@ -206,15 +284,65 @@ class TouiteRepository {
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img
             FROM touite t
-            WHERE t.id_user = :iduser
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
+            WHERE t.id_user = :iduser
             GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
             ORDER BY t.date_touite DESC";
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'iduser' => $iduser
+        ]);
         $rows = $stmt->fetchAll();
 
+
         return ($this->getTouites($rows));
+    }
+
+    public function getListTouiteUserInverse(int $iduser): array
+    {
+
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+                   u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
+                   i.chemin_img
+            FROM touite t
+            JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            WHERE t.id_user = :iduser
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            ORDER BY t.date_touite ASC";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'iduser' => $iduser
+        ]);
+        $rows = $stmt->fetchAll();
+
+
+        return ($this->getTouites($rows));
+    }
+
+    public function getTouiteAbonnement(int $iduser) : array{
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+            u.id_user, u.username, u.nom_user, u.prenom_user, u.email_user,
+            i.chemin_img, t.score
+            FROM touite t
+            INNER JOIN utilisateur u ON u.id_user = t.id_user
+            LEFT JOIN image i ON t.id_image = i.id_image
+            WHERE t.id_user IN (SELECT id_followed FROM abonnement_user WHERE id_follower = :iduser1)
+               OR t.id_touite IN (SELECT tt.id_touite
+                                  FROM touite_tag tt
+                                  INNER JOIN abonnement_tag at ON at.id_tag = tt.id_tag
+                                  WHERE at.id_user = :iduser2)
+            ORDER BY t.date_touite DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'iduser1' => $iduser,
+            'iduser2' => $iduser
+        ]);
+        $rows = $stmt->fetchAll();
+
+        return $this->getTouites($rows);
     }
 
 
@@ -225,19 +353,29 @@ class TouiteRepository {
 
 
 
-    public function getListTouiteTag(Tag $tag): array ///TODO ajouter les tag (VRM dans la base)
+
+    public function getListTouiteTag(int $id_tag): array ///TODO ajouter les tag (VRM dans la base)
     {
+
+
 
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
-                   i.chemin_img
-            FROM touite t
-            WHERE t.id_user = :iduser
-            JOIN utilisateur u ON u.id_user = t.id_user
-            LEFT JOIN image i ON t.id_image = i.id_image
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
-            ORDER BY t.date_touite DESC";
-        $stmt = $this->pdo->query($sql);
+                   i.chemin_img FROM touite t
+                INNER JOIN touite_tag tt ON t.id_touite = tt.id_touite
+                INNER JOIN tag tag ON tt.id_tag = tag.id_tag
+                INNER JOIN utilisateur u ON t.id_user = u.id_user
+                LEFT JOIN image i ON t.id_image = i.id_image
+                WHERE tag.id_tag = :id_tag
+                GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+                ORDER BY t.date_touite DESC";
+
+
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_tag' => $id_tag
+        ]);
         $rows = $stmt->fetchAll();
 
         return ($this->getTouites($rows));
@@ -270,7 +408,9 @@ class TouiteRepository {
                 $row['date_touite'],
                 $row['texte_touite'],
                 $row['chemin_img'] ?? null,
-                [] // ou null selon ce que tu veux initialiser
+                [], // ou null selon ce que tu veux initialiser
+                $row['score'] ?? 0
+
             );
         }
 
@@ -283,7 +423,9 @@ class TouiteRepository {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id_user' => $id_user]);
         $row = $stmt->fetch();
+        if($row == false){
 
+        }
         $user = new User(
             (int)$row['id_user'],
             0,
@@ -298,7 +440,7 @@ class TouiteRepository {
     public function getTouiteById(int $id_touite):Touite{
         $sql = "SELECT * FROM touite WHERE id_touite = :id_touite";
 
-        $stmt = $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id_touite' => $id_touite]);
         $row = $stmt->fetch();
 
@@ -311,18 +453,169 @@ class TouiteRepository {
             $row['date_touite'],
             $row['texte_touite'],
             $row['chemin_img'] ?? null,
-            [] // ou null selon ce que tu veux initialiser
+            [], // ou null selon ce que tu veux initialiser
+        $row['score'] ?? 0
         );
 
 
         return $touite;
     }
 
+    public function calculerScore($idUser) : int {
+        $sql = "SELECT SUM(score) FROM touite WHERE id_user = :id_user";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id_user' => $idUser]);
+        $row = $stmt->fetch();
+        return $row['SUM(score)'] ?? 0;
+    }
 
+    public function likeTouite(int $idTouite, int $userId): void
+    {
+        $sql = "SELECT valeur FROM evaluation
+        WHERE id_user = :id_user AND id_touite = :id_touite";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_user'   => $userId,
+            'id_touite' => $idTouite]);
 
-    //TODO rajouter le systeme d'évaluation
+        if ($stmt->rowCount() == 0) {
+            $sql = "INSERT INTO evaluation (id_user, id_touite, VALEUR) VALUES (:id_user, :id_touite, 1)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['id_user' => $userId, 'id_touite' => $idTouite]);
+            $sql = "UPDATE touite SET score = score + 1 WHERE id_touite = :idTouite";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idTouite' => $idTouite]);
+        } else {
+            $row = $stmt->fetch();
 
+            if ($row['valeur'] == 1) {
+                // déjà liké on supprime l'évaluation et on fait -1
+                $sql = "DELETE FROM evaluation WHERE id_user = :id_user AND id_touite = :id_touite";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute(['id_user' => $userId, 'id_touite' => $idTouite]);
+                $sql = "UPDATE touite SET score = score - 1 WHERE id_touite = :idTouite";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute(['idTouite' => $idTouite]);
+            } else {
+                // avait disliké on passe la valeur à +1 et on fait +2
+                $sql = "UPDATE evaluation SET valeur = 1 WHERE id_user = :id_user AND id_touite = :id_touite";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute(['id_user' => $userId, 'id_touite' => $idTouite]);
+                $sql = "UPDATE touite SET score = score + 2 WHERE id_touite = :idTouite";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute(['idTouite' => $idTouite]);
+            }
+        }
+    }
+    public function dislikeTouite(int $idTouite, int $userId): void
+    {
+        $sql = "SELECT valeur FROM evaluation
+        WHERE id_user = :id_user AND id_touite = :id_touite";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'id_user'   => $userId,
+            'id_touite' => $idTouite]);
 
+        if ($stmt->rowCount() == 0) {
+            $sql = "INSERT INTO evaluation (id_user, id_touite, VALEUR) VALUES (:id_user, :id_touite, -1)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['id_user' => $userId, 'id_touite' => $idTouite]);
+            $sql = "UPDATE touite SET score = score - 1 WHERE id_touite = :idTouite";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idTouite' => $idTouite]);
+        } else {
+            $row = $stmt->fetch();
 
+            if ($row['valeur'] == -1) {
+                // déjà disliké on supprime l'évaluation et on fait +1
+                $sql = "DELETE FROM evaluation WHERE id_user = :id_user AND id_touite = :id_touite";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute(['id_user' => $userId, 'id_touite' => $idTouite]);
+                $sql = "UPDATE touite SET score = score + 1 WHERE id_touite = :idTouite";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute(['idTouite' => $idTouite]);
+            } else {
+                // avait liké on passe la valeur à -1 et on fait -2
+                $sql = "UPDATE evaluation SET valeur = -1 WHERE id_user = :id_user AND id_touite = :id_touite";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute(['id_user' => $userId, 'id_touite' => $idTouite]);
+                $sql = "UPDATE touite SET score = score - 2 WHERE id_touite = :idTouite";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute(['idTouite' => $idTouite]);
+            }
+        }
+    }
 
+    public function abonnerUser(int $idFollower,int $idFollowed) : void{
+        $sql = "SELECT * FROM abonnement_user WHERE id_follower = :idFollower AND id_followed = :idFollowed";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['idFollower' => $idFollower, 'idFollowed' => $idFollowed]);
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            $sql = "INSERT INTO abonnement_user (id_follower, id_followed) VALUES (:idFollower, :idFollowed)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idFollower' => $idFollower, 'idFollowed' => $idFollowed]);
+        } else {
+            $sql = "DELETE FROM abonnement_user WHERE id_follower = :idFollower AND id_followed = :idFollowed";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idFollower' => $idFollower, 'idFollowed' => $idFollowed]);
+        }
+    }
+
+    public function abonnerTag(int $idUser,int $idTag) : void{
+        $sql = "SELECT * FROM abonnement_tag WHERE id_user = :idUser AND id_tag = :idTag";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['idUser' => $idUser, 'idTag' => $idTag]);
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            $sql = "INSERT INTO abonnement_tag (id_user, id_tag) VALUES (:idUser, :idTag)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idUser' => $idUser, 'idTag' => $idTag]);
+        } else {
+            $sql = "DELETE FROM abonnement_tag WHERE id_user = :idUser AND id_tag = :idTag";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idUser' => $idUser, 'idTag' => $idTag]);
+        }
+    }
+
+    public function estAbonne(int $idFollowed) : string {
+        if(isset($_SESSION['user'])){
+            $sql = "SELECT * FROM abonnement_user WHERE id_follower = :idFollower AND id_followed = :idFollowed";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idFollower' => $this->getUser($_SESSION['user'])->getIdUser(), 'idFollowed' => $idFollowed]);
+            $row = $stmt->fetch();
+            if($row){
+                return "abonné(e)";
+            }
+        }
+        return "s'abonner";
+    }
+
+    public function suisTag(int $idTag) : string{
+        if(isset($_SESSION['user'])){
+            $sql = "SELECT * FROM abonnement_tag WHERE id_user = :idUser AND id_tag = :idTag";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['idUser' => $this->getUser($_SESSION['user'])->getIdUser(), 'idTag' => $idTag]);
+            $row = $stmt->fetch();
+            if($row){
+                return "suivis";
+            }
+        }
+        return "suivre";
+    }
+
+    public function classementInfluenceurs(): array{
+        $sql = "SELECT u.id_user, u.username, 
+       (SELECT COUNT(*) FROM touite t where t.id_user = u.id_user) as nbTouites,
+       (SELECT COUNT(*) FROM abonnement_user au where au.id_followed = u.id_user) as nbFollowers
+        FROM utilisateur u
+        ORDER BY nbFollowers DESC;";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+
+    }
 }
