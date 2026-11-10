@@ -605,4 +605,17 @@ class TouiteRepository {
         }
         return "suivre";
     }
+
+    public function classementInfluenceurs(): array{
+        $sql = "SELECT u.id_user, u.username, 
+       (SELECT COUNT(*) FROM touite t where t.id_user = u.id_user) as nbTouites,
+       (SELECT COUNT(*) FROM abonnement_user au where au.id_followed = u.id_user) as nbFollowers
+        FROM utilisateur u
+        ORDER BY nbFollowers DESC;";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
+
+    }
 }

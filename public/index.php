@@ -4,6 +4,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use touiteur\action\AbonnerTagAction;
 use touiteur\action\AbonnerUserAction;
+use touiteur\action\adminPageAction;
+use touiteur\action\ConnectionAdminAction;
 use touiteur\action\ConnexionAction;
 use touiteur\action\DeconnecterAction;
 use touiteur\action\DislikeAction;
@@ -37,6 +39,8 @@ try {
     $dispatcher->addRoute('abonnementUser', AbonnerUserAction::class);
     $dispatcher->addRoute('abonnementTag', AbonnerTagAction::class);
     $dispatcher->addRoute('pagePerso', PagePersoAction::class);
+    $dispatcher->addRoute('connexionAdmin', ConnectionAdminAction::class);
+    $dispatcher->addRoute('adminPage', adminPageAction::class);
     $dispatcher->run();
 
 

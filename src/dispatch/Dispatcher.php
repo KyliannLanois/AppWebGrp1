@@ -71,11 +71,11 @@ class Dispatcher
            </nav>
            </header>
            <main>
-           $main;
+           $main
            </main>
            <footer>
-           <a href="?action=menuAdmin">Menu Admin</a>
-</footer>
+           <a href="?action=connexionAdmin">Menu Admin</a>
+            </footer>
            </body>
 HTML;
     echo $html;

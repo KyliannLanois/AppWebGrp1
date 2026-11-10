@@ -161,3 +161,11 @@ INSERT INTO `evaluation` (`id_user`, `id_touite`, `valeur`) VALUES
     (1, 4, -1)
     ON DUPLICATE KEY UPDATE
         valeur=VALUES(valeur);
+
+-- 5. Ajout abo aux autres users
+INSERT INTO `abonnement_user` (`id_follower`, `id_followed`) VALUES
+(1, 3),
+(1, 2),
+(2, 3),
+(4, 3),
+(2,1)
