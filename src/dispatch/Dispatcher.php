@@ -50,13 +50,8 @@ class Dispatcher
         <title>Touiteur</title>
         <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         </head>
-        <body>
-            <header>
-            <h1>Touiteur</h1>
-            <nav>
-            <a href="?action=default">MenuPrincipal</a>
-            <a href="?action=afficherTendances">Tendances</a>
-            <a href="?action=add-touite">Ajouter touites</a>
+        
+            
         <body class="dark:bg-black bg-gray-100">
         <div class="flex min-h-screen mx-auto flex min-h-screen max-w-6xl justify-center">
         
@@ -64,8 +59,9 @@ class Dispatcher
             <header class="sticky top-0 flex h-screen w-48 shrink-0 flex-col justify-between border-r border-gray-200 px-3 py-4">
             <div>
             <a href="?action=default" class="mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-2xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start"><span class="w-fit xl:inline">Touiteur</span></a>
-            <nav class="flex flex-col gap-1">
+            <nav class="flex flex-col gap-1 border-t dark:border-gray-600 dark:bg-slate-950">
             
+            <a href="?action=afficherTendances" class="mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">Tendances</a>
             <a href="?action=add-touite" class="mt-4 flex items-center justify-center rounded-full bg-blue-500 py-3 text-lg font-bold text-white hover:bg-blue-600 transition">Ajouter touites</a>
 
        HTML;
