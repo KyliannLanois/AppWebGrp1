@@ -18,8 +18,8 @@ class ProfilAction extends Action
         $touites = $repo->getListTouiteUser($userId);
 
         $html = "<section class='touite-action'>";
-        $html .= "<h2>Bienvenu ".$userName."</h2>";
-        $html .= "<h3>Voici vos touites :</h3>";
+        $html .= "<h2 class='text-xl dark:text-gray-400 font-bold'>Bienvenue ".$userName."</h2>";
+        $html .= "<h3 class='text-lg dark:text-gray-400 font-bold'>Voici vos touites :</h3>";
 
 
 
@@ -36,10 +36,10 @@ class ProfilAction extends Action
 
         $html .= <<<HTML
 <section class="scoreProfil">
-<p>Votre score total est de : {$user->getScore()}</p>
+<p class="text-md dark:text-gray-400">Votre score total est de : {$user->getScore()}</p>
 </section>
-<section class="deconnexion">
-<a href="?action=deconnexion">Se déconnecter</a>
+<section class="flex flex-col gap-2 w-34">
+<a href="?action=deconnexion" class="border rounded p-2 hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-300">Se déconnecter</a>
 </section>
 HTML;
 

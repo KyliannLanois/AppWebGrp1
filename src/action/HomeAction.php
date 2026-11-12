@@ -16,12 +16,14 @@ class HomeAction extends Action {
         }
 
         $html = "<section class='touite-action'>";
-        $html .= "<h2>Derniers touites publiés</h2>";
+        $html .= "<h2 class='text-lg dark:text-gray-400 font-bold'>Derniers touites publiés</h2>";
         $html .= <<<HTML
         <details>
-        <summary>Trier par</summary>
-        <a href="?action=home&ordre=desc">Plus récents d'abord</a><br>
-        <a href="?action=home&ordre=asc">Plus anciens d'abord</a>
+        <summary class="text-lg dark:text-gray-400 font-bold">Trier par</summary>
+        <div class="flex item-center gap-2">
+        <a href="?action=home&ordre=desc" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Plus récents d'abord</a><br>
+        <a href="?action=home&ordre=asc" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Plus anciens d'abord</a>
+        </div>
         </details> <br>
         HTML;
 
