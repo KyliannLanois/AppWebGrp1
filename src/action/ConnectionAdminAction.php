@@ -30,16 +30,18 @@ class ConnectionAdminAction extends Action
         <section class="connexion-action">
             <h2>Connexion en tant qu'administrateur</h2>
             <form method="POST" action="?action=connexionAdmin">
-                <div>
-                    <label for="login">Rentrer ci-dessous le login: </label><br>
-                    <input type="text" id="login" name="login" maxlength="50" value="{$safeText}"><br>
-                    <label for="password">Rentrer ci-dessous le mot de passe: </label><br>
-                    <input type="password" id="password" name="password" maxlength="50" value="{$safeText}"><br>
+                <div class="flex flex-col border border-gray-200 rounded-md p-4 shadow-lg dark:border-gray-400 dark:shadow-gray-600/50 dark:bg-slate-950">
+                    <label for="login" class="text-sm dark:text-gray-400">Rentrer ci-dessous le login: </label><br>
+                    <input type="text" id="login" name="login" maxlength="50" value="{$safeText}" class="w-full border-0 border-b-2 border-gray-300 bg-transparent px-1 py-2
+              focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400 dark:shadow-none dark:text-gray-400"><br>
+                    <label for="password" class="text-sm dark:text-gray-400">Rentrer ci-dessous le mot de passe: </label><br>
+                    <input type="password" id="password" name="password" maxlength="50" value="{$safeText}" class="w-full border-0 border-b-2 border-gray-300 bg-transparent px-1 py-2
+              focus:border-blue-500 focus:outline-none dark:border-gray-600 dark:placeholder-gray-400 dark:shadow-none dark:text-gray-400"><br>
                 </div>
                 <br>
-                <button type="submit">Enregistrer</button>
-                <a href="?action=default">Annuler</a>
-                <p>La connection admin permet de consulter des données privées.</p>
+                <button type="submit" class="bg-blue-500 rounded-full p-2 text-white hover:bg-blue-600 text-center text-lg font-bold transition cursor-pointer mr-5">Enregistrer</button>
+                <a href="?action=default" class="rounded-full p-2 font-bold text-lg text-center transition border-2 hover:bg-gray-200 border-gray-200 dark:bg-slate-950 dark:text-gray-400 dark:border-gray-600 dark:shadow-none dark:hover:bg-slate-900">Annuler</a>
+                <p class="text-sm text-gray-300 mt-5">La connection admin permet de consulter des données privées.</p>
             </form>
         </section>
         HTML;
