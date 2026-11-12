@@ -4,8 +4,10 @@ namespace touiteur\repository;
 
 
 
+use Couchbase\InsertOptions;
 use Exception;
 use PDO;
+use touiteur\objet\Image;
 use touiteur\objet\Tag;
 use touiteur\objet\Touite;
 use touiteur\objet\User;
@@ -687,5 +689,30 @@ class TouiteRepository {
 
         $rows = $stmt->fetchAll();
         return $this->getTouites($rows);
+    }
+
+
+    public function addImg(string $description,string $path) : int{
+        $sql = "INSERT INTO image (desc_image,chemin_img) 
+            VALUES (:desc_img, :chemin_img)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'desc_img' => $description,
+            'chemin_img' => $path
+        ]);
+
+        $newId = $this->pdo->lastInsertId();
+
+        return $newId;
+
+    }
+
+    public function getImg(int $id_image) : Image{
+        $sql = "SELECT * FROM image WHERE id_image = :id_image";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id_image' => $id_image]
+        );
+        $row = $stmt->fetch();
+        return new Image($id_image,$row['desc_img'],$row['chemin_img']);
     }
 }

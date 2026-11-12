@@ -3,8 +3,6 @@
 
 namespace touiteur\render;
 
-use touiteur\repository\TouiteRepository;
-
 class TouiteRendererLong extends TouiteRendererDefault{
 
     public function render(int $selector = 1): string
@@ -23,27 +21,28 @@ class TouiteRendererLong extends TouiteRendererDefault{
         $date = $this->touite->getDate();
         $score = $this->touite->getScore();
         $touiteId = $this->touite->getIdTouite();
-        $idUser = $auteurObj->getIdUser();
-        $repo = TouiteRepository::getInstance();
+
+        $imgId = $this->touite->getImage();
+        $imglink = $this->repo->getImg($imgId)->getPath();
 
        return <<<HTML
     <div class="touiteDetail">
         <div class="touite-header">
-          <br>
+          
             <div class="user-info">
-                <a href="?action=DisplayTouiteOfUser&id={$idUser}">{$auteur}</a>
-                <a href="?action=abonnementUser&idFollowed={$auteurObj->getIdUser()}&touiteId={$touiteId}">{$repo->estAbonne($idUser)}</a>
+                <p class="username">{$auteur}</p>
             </div>
         </div>
         <div class="touite-content">
             <p>{$this->replaceTagInText($texte)}</p>
+            <img src=$imglink alt="Image du touite">
         </div>
         <div class="touite-footer">
             <a href="?action=dislike&touiteId={$touiteId}" class="dislike-button">Dislike</a>
             <a href="?action=like&touiteId={$touiteId}" class="like-button">Like</a>
             <span class="score">Score : {$score}</span>
             <p class="time">{$date}</p>
-            <a href="{$_SERVER['HTTP_REFERER']}">Retour</a>
+            <a href="?action=default">Retour</a>
             
         </div>
 
