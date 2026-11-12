@@ -54,6 +54,7 @@ class Dispatcher
             <h1>Touiteur</h1>
             <nav>
             <a href="?action=default">MenuPrincipal</a>
+            <a href="?action=afficherTendances">Tendances</a>
             <a href="?action=add-touite">Ajouter touites</a>
 
        HTML;

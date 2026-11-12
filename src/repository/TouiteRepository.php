@@ -688,4 +688,47 @@ class TouiteRepository {
         $rows = $stmt->fetchAll();
         return $this->getTouites($rows);
     }
+
+
+    public function getAllAbonnees(int $id_user): array {
+        $sql = "SELECT u.id_user, u.username, u.nom_user, u.prenom_user, u.nb_touites from utilisateur u
+        JOIN abonnement_user au ON u.id_user = au.id_follower
+        WHERE au.id_followed = :id_user
+        ORDER BY u.username ASC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id_user' => $id_user]);
+        return $stmt->fetchAll();
+    }
+
+
+    public function getScoreMoyenUser (int $id_user): float {
+        $sql="SELECT AVG(sous_req.score_touite)
+        FROM (
+            SELECT COALESCE(SUM(e.valeur), 0) AS score_touite
+            FROM touite t
+            LEFT JOIN evaluation e ON t.id_touite = e.id_touite
+            WHERE t.id_user = :id_user
+            GROUP BY t.id_touite
+        ) AS sous_req";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id_user' => $id_user]);
+
+        $moyenne = $stmt->fetchColumn();
+
+        return $moyenne !== null ? round ((float)$moyenne,2) : 0.0;
+    }
+
+
+    public function getTendances() :array {
+        $sql =" SELECT t.id_tag, t.libelle_tag, t.desc_tag, COUNT(tt.id_touite) AS nb_mentions
+            FROM tag t
+            JOIN touite_tag tt ON t.id_tag = tt.id_tag
+            GROUP BY t.id_tag, t.libelle_tag, t.desc_tag
+            ORDER BY nb_mentions ASC, t.libelle_tag ASC";
+
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll();
+    }
 }

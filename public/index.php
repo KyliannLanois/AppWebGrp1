@@ -19,6 +19,8 @@ use touiteur\dispatch\Dispatcher;
 use touiteur\action\HomeAction;
 use touiteur\action\AddTouitesAction;
 use touiteur\action\DisplayTouitesOfUserAction;
+use touiteur\action\AfficherAbonneeAction;
+use touiteur\action\TendanceAction;
 
 try {
     TouiteRepository::setConfig(__DIR__ . "/../config/db.config.ini");
@@ -41,6 +43,8 @@ try {
     $dispatcher->addRoute('pagePerso', PagePersoAction::class);
     $dispatcher->addRoute('connexionAdmin', ConnectionAdminAction::class);
     $dispatcher->addRoute('adminPage', adminPageAction::class);
+    $dispatcher->addRoute('afficherAbonnee', AfficherAbonneeAction::class);
+    $dispatcher->addRoute('afficherTendances', TendanceAction::class);
     $dispatcher->run();
 
 

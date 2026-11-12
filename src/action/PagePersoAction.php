@@ -26,7 +26,7 @@ class PagePersoAction extends Action
         if ($page > $totalPages) {
             $page = $totalPages;
         }
-        $touites = $repo->getTouiteAbonnemenPage($userId,$page,$limit);
+        $touites = $repo->getTouiteAbonnementPage($userId,$page,$limit);
 
         $html = <<<HTML
         <div>

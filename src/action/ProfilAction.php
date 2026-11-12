@@ -19,6 +19,7 @@ class ProfilAction extends Action
 
         $html = "<section class='touite-action'>";
         $html .= "<h2>Bienvenu ".$userName."</h2>";
+        $html .= "<a href='?action=afficherAbonnee'>Afficher la liste de ses abonnées</a>";
         $html .= "<h3>Voici vos touites :</h3>";
 
 
