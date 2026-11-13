@@ -4,8 +4,10 @@ namespace touiteur\repository;
 
 
 
+use Couchbase\InsertOptions;
 use Exception;
 use PDO;
+use touiteur\objet\Image;
 use touiteur\objet\Tag;
 use touiteur\objet\Touite;
 use touiteur\objet\User;
@@ -69,7 +71,7 @@ class TouiteRepository {
         // la direction ne peut pas être bindée en PDO : liste blanche
         $direction = (strtolower($ordre) === 'asc') ? 'ASC' : 'DESC';
 
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite, t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img, t.score
             FROM touite t
@@ -276,14 +278,14 @@ class TouiteRepository {
     public function getListTouiteUser(int $iduser): array
     {
 
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img, t.score
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
             WHERE t.id_user = :iduser
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite,t.id_image, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
             ORDER BY t.date_touite DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -298,14 +300,14 @@ class TouiteRepository {
     public function getListTouiteUserInverse(int $iduser): array
     {
 
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img, t.score
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
             WHERE t.id_user = :iduser
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite,t.id_image, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
             ORDER BY t.date_touite ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -321,7 +323,7 @@ class TouiteRepository {
         $page = max(1, $page);
         $offset = ($page - 1) * self::LIMITE;
 
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
             u.id_user, u.username, u.nom_user, u.prenom_user, u.email_user,
             i.chemin_img, t.score
             FROM touite t
@@ -360,15 +362,15 @@ class TouiteRepository {
 
 
 
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img FROM touite t
-                INNER JOIN touite_tag tt ON t.id_touite = tt.id_touite
+                INNER JOIN touite_tag tt ON tt.id_touite = t.id_touite
                 INNER JOIN tag tag ON tt.id_tag = tag.id_tag
                 INNER JOIN utilisateur u ON t.id_user = u.id_user
                 LEFT JOIN image i ON t.id_image = i.id_image
                 WHERE tag.id_tag = :id_tag
-                GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+                GROUP BY t.id_touite, t.texte_touite, t.date_touite,t.id_image, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
                 ORDER BY t.date_touite DESC";
 
 
@@ -403,12 +405,17 @@ class TouiteRepository {
                 $row['email_user']
             );
 
+            $img = null;
+            if($row['id_image'] !== null){
+                $img = $this->getImg((int)$row['id_image']);
+            }
+
             $touites[] = new Touite(
                 (int)$row['id_touite'],
                 $auteur,
                 $row['date_touite'],
                 $row['texte_touite'],
-                $row['chemin_img'] ?? null,
+                $img,
                 [], // ou null selon ce que tu veux initialiser
                 $row['score'] ?? 0
 
@@ -424,9 +431,7 @@ class TouiteRepository {
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id_user' => $id_user]);
         $row = $stmt->fetch();
-        if($row == false){
 
-        }
         $user = new User(
             (int)$row['id_user'],
             0,
@@ -446,6 +451,10 @@ class TouiteRepository {
         $row = $stmt->fetch();
 
         $user = $this->getUserById((int)$row['id_user']);
+        $img = null;
+        if($row['id_image'] !== null){
+            $img = $this->getImg((int)$row['id_image']);
+        }
 
 
         $touite = new Touite(
@@ -453,7 +462,7 @@ class TouiteRepository {
             $user,
             $row['date_touite'],
             $row['texte_touite'],
-            $row['chemin_img'] ?? null,
+            $img,
             [], // ou null selon ce que tu veux initialiser
             $row['score'] ?? 0
         );
@@ -674,8 +683,9 @@ class TouiteRepository {
     }
 
 
-    public function getTendances() :array {
-        $sql =" SELECT t.id_tag, t.libelle_tag, t.desc_tag, COUNT(tt.id_touite) AS nb_mentions
+    public function getTendances() :array
+    {
+        $sql = " SELECT t.id_tag, t.libelle_tag, t.desc_tag, COUNT(tt.id_touite) AS nb_mentions
             FROM tag t
             JOIN touite_tag tt ON t.id_tag = tt.id_tag
             GROUP BY t.id_tag, t.libelle_tag, t.desc_tag
@@ -683,5 +693,30 @@ class TouiteRepository {
 
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll();
+    }
+
+
+    public function addImg(string $description,string $path) : int{
+        $sql = "INSERT INTO image (desc_image,chemin_img) 
+            VALUES (:desc_image, :chemin_img)";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            'desc_image' => $description,
+            'chemin_img' => $path
+        ]);
+
+        $newId = $this->pdo->lastInsertId();
+
+        return $newId;
+
+    }
+
+    public function getImg(int $id_image) : Image{
+        $sql = "SELECT * FROM image WHERE id_image = :id_image";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['id_image' => $id_image]
+        );
+        $row = $stmt->fetch();
+        return new Image($id_image,$row['desc_image'],$row['chemin_img']);
     }
 }

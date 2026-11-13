@@ -23,20 +23,22 @@ class TouiteRendererLong extends TouiteRendererDefault{
         $date = $this->touite->getDate();
         $score = $this->touite->getScore();
         $touiteId = $this->touite->getIdTouite();
-        $idUser = $auteurObj->getIdUser();
-        $repo = TouiteRepository::getInstance();
+        $iduser = $auteurObj->getIdUser();
+        $imgPath = $this->touite->getImage()->getPath();
+
 
        return <<<HTML
     <div class="border dark:border-gray-600 dark:shadow-none dark:bg-slate-950 rounded-lg p-4 flex flex-col gap-4">
         <div class="touite-header">
-          <br>
+          
             <div class="user-info">
-                <a href="?action=DisplayTouiteOfUser&id={$idUser}" class="text-sm dark:text-gray-400 font-semibold text-xl mr-5 before:content-['@'] hover:underline hover:font-bold hover:text-blue-500">{$auteur}</a>
-                <a href="?action=abonnementUser&idFollowed={$auteurObj->getIdUser()}&touiteId={$touiteId}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">{$repo->estAbonne($idUser)}</a>
+                <a href="?action=DisplayTouiteOfUser&id={$iduser}" class="text-sm dark:text-gray-400 font-semibold text-xl mr-5 before:content-['@'] hover:underline hover:font-bold hover:text-blue-500">{$auteur}</a>
+                <a href="?action=abonnementUser&idFollowed={$iduser}&touiteId={$touiteId}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">{$this->repo->estAbonne($iduser)}</a>
             </div>
         </div>
         <div class="bg-gray-200 dark:bg-slate-900 rounded-lg p-4 m-3 dark:text-gray-400">
             <p>{$this->replaceTagInText($texte)}</p>
+            <img src=$imgPath alt="Image du touite">
         </div>
         <div class="m-4 flex items-center gap-3">
             <a href="?action=dislike&touiteId={$touiteId}" class="inline-flex rounded-full p-2 text-gray-500 hover:bg-red-100 hover:text-red-600 transition"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -54,7 +56,8 @@ class TouiteRendererLong extends TouiteRendererDefault{
 
     </div>
     HTML;
-}
+       }
+
 
     public function renderCompact(): string
     {

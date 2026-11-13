@@ -3,15 +3,22 @@
 
 namespace touiteur\action;
 
+use finfo;
+use Random\RandomException;
+use touiteur\objet\Image;
 use touiteur\objet\Tag;
+use touiteur\objet\Touite;
 use touiteur\repository\TouiteRepository;
 
 class AddTouitesAction extends Action {
 
+
     public function execute(): string{
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $repo = new TouiteRepository();
+            $id_img = null;
             $texte = trim($_POST['texte'] ?? '');
+
 
             if (empty($texte)) {
                 return "<p> Le texte du touite ne peut etre vide</p>";
@@ -21,10 +28,45 @@ class AddTouitesAction extends Action {
                 return "<p> Le texte du touite ne peut etre plus long que 235 caractères</p>";
             }
 
+
+
+
+            //gestion image
+
+            if(isset($_FILES['img']) && $_FILES['img']['error'] !== UPLOAD_ERR_NO_FILE){
+                $file = $_FILES['img'];
+                if($file['error'] !== UPLOAD_ERR_OK){
+                    return "<p> Erreur dans l'envoie de l'image</p>";
+                }
+                $maxSize = 20 * 1024 * 1024;
+
+
+                if($file['size'] > $maxSize) {
+                    return "<p>L'image est trop lourd</p>";
+                }
+
+//                $finfo = new finfo(FILEINFO_MIME_TYPE);
+//                $formatOk = ["jpg", "jpeg", "png", "webp"];
+//                $type = $finfo->file($file['tmp_name']);
+//                if(! in_array($type, $formatOk)) {
+//                    return "<p>Format non admis ! </p>";
+//                }
+
+                //TODO add test format
+
+                $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+                $newFileName = uniqid() . "." . $extension;
+
+                if(!move_uploaded_file($file['tmp_name'], "uploads/" . $newFileName)){
+                    return "<p>Erreur lors de l'envoie de la photo</p>";
+                }
+                $id_img= $repo->addImg($file["tmp_name"],"uploads/" .$newFileName);
+            }
             //Pour gerer le username
+
             $user = $repo->getUser(trim($_POST['username']));
             $username = $user->getUsername();
-            $idTouite = $repo->addTouite($username, $texte);
+            $idTouite = $repo->addTouite($username, $texte, $id_img);
 
             //Gestion des tags
             $Tags = Tag::getTagInText($texte);
@@ -64,10 +106,12 @@ class AddTouitesAction extends Action {
                     <input type="text" id="username" name="username" maxlength="50" value="{$safeText}" class="px-2 py-1 border-3 border-gray-200 rounded-md dark:text-gray-400 dark:border-gray-600"><br>
                     <label for="texte" class="text-sm dark:text-gray-400">Votre message (235 caractères max, incluez vos #tags) :</label><br>
                     <textarea id="texte" name="texte" rows="4" cols="50" maxlength="235" required class="px-2 py-1 border border-gray-200 shadow-md dark:bg-slate-950 dark:text-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:shadow-none"></textarea>
+                    <label for="img">Ajouter une image (max 20 Mo)</label>
+                    <input id="img" type="file" name="img" accept="image/png, image/jpeg, image/jpg, image/webp" ><br>
                 </div>
                 <br>
-                <button type="submit" class="bg-blue-500 rounded-full p-2 text-white hover:bg-blue-600 text-center text-lg font-bold transition cursor-pointer mr-5">Touiter</button>
-                <a href="?action=default" class="rounded-full p-2 font-bold text-lg text-center transition border-2 hover:bg-gray-200 border-gray-200 dark:bg-slate-950 dark:text-gray-400 dark:border-gray-600 dark:shadow-none dark:hover:bg-slate-900">Annuler</a>
+                <button type="submit">Touiter</button>
+                <a href="?action=default">Annuler</a>
             </form>
         </section>
         HTML;
