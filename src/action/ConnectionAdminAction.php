@@ -2,6 +2,14 @@
 
 namespace touiteur\action;
 
+/**
+ * Action responsable de la connexion à l’espace d’administration.
+ *
+ * Traite les requêtes de connexion administrateur en vérifiant les identifiants
+ * fournis via un formulaire. En cas de succès, redirige vers la page
+ * d’administration. En cas d’échec ou de champs manquants, retourne un message
+ * d’erreur. Pour une requête non soumise, génère le formulaire de connexion.
+ */
 class ConnectionAdminAction extends Action
 {
     public function execute(): string{

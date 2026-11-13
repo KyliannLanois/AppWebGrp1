@@ -5,6 +5,15 @@ namespace touiteur\action;
 use touiteur\repository\TouiteRepository;
 use touiteur\render\TouiteRendererCompact;
 
+/**
+ * Action contrôlant l’affichage de la page d’accueil.
+ *
+ * Récupère les touites disponibles depuis le dépôt, applique l’ordre de tri
+ * demandé, valide le numéro de page et génère le contenu HTML correspondant.
+ *
+ * Gère également l’affichage des liens de tri, la pagination et le message
+ * présenté lorsqu’aucun touite n’est disponible.
+ */
 class HomeAction extends Action {
 
     public function execute(): string{

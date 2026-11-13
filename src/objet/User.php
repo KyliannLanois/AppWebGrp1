@@ -4,6 +4,16 @@ namespace touiteur\objet;
 
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Représente un utilisateur de l’application.
+ *
+ * Cette classe regroupe les informations principales associées à un utilisateur,
+ * notamment son identifiant, son nom d’utilisateur, ses informations personnelles
+ * facultatives et le nombre de touites qui lui sont associés.
+ *
+ * Elle permet également d’obtenir le score de l’utilisateur à partir du dépôt
+ * chargé du calcul correspondant.
+ */
 class User
 {
     private int $id_user;

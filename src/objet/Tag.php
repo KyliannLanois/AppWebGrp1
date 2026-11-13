@@ -2,6 +2,12 @@
 
 namespace touiteur\objet;
 
+/**
+ * Représente un tag identifié par un libellé et une description associée.
+ *
+ * Fournit l’accès aux informations principales du tag et permet d’extraire
+ * les libellés de tags présents dans un texte à partir du préfixe dièse.
+ */
 class Tag
 {
     private int $id_tag;

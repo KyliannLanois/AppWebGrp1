@@ -2,6 +2,16 @@
 
 namespace touiteur\action;
 
+/**
+ * Action de connexion permettant à un utilisateur de renseigner et mémoriser
+ * son pseudonyme dans la session.
+ *
+ * Cette action traite la soumission du formulaire de connexion, valide que le
+ * pseudonyme fourni n'est pas vide, l'enregistre en session puis redirige vers
+ * l'action par défaut. Lorsqu'aucune soumission n'est effectuée, elle affiche
+ * le formulaire prérempli avec le pseudonyme déjà présent en session, le cas
+ * échéant.
+ */
 class ConnexionAction extends Action
 {
 

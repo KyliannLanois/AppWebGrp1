@@ -4,7 +4,15 @@
 namespace touiteur\render;
 
 use touiteur\action\DisplayTouitesOfUserAction;
-
+/**
+ * Fournit un rendu compact d’un touite.
+ *
+ * Cette classe génère une représentation HTML synthétique contenant les
+ * informations essentielles du touite, notamment son auteur, son contenu,
+ * son score et un lien vers l’affichage détaillé.
+ *
+ * Le rendu long est délégué au moteur de rendu spécialisé correspondant.
+ */
 class TouiteRendererCompact extends TouiteRendererDefault{
 
 

@@ -4,6 +4,14 @@ namespace touiteur\action;
 
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Action permettant à l’utilisateur connecté de s’abonner à un autre utilisateur.
+ *
+ * Récupère l’identifiant de l’utilisateur à suivre depuis la requête, vérifie
+ * l’existence d’un utilisateur en session, puis enregistre l’abonnement via le dépôt.
+ * Redirige ensuite vers le touite d’origine lorsqu’il est indiqué, ou vers la page
+ * des touites de l’utilisateur suivi.
+ */
 class AbonnerUserAction extends Action
 {
     public function execute(): string

@@ -4,6 +4,13 @@ namespace touiteur\action;
 
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Action d'administration chargée de générer l'affichage du classement des influenceurs.
+ *
+ * Récupère les données de classement depuis le dépôt des touites et produit une chaîne
+ * de caractères représentant le contenu à afficher, incluant le nom d'utilisateur,
+ * le nombre de touites publiés et le nombre d'abonnés pour chaque influenceur.
+ */
 class adminPageAction extends Action
 {
 

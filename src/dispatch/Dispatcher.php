@@ -6,7 +6,21 @@ use touiteur\exception\RouterException;
 use src\action\Action;
 
 
-
+/**
+ * Répartiteur central chargé de sélectionner et d’exécuter une action applicative
+ * à partir du paramètre de requête correspondant.
+ *
+ * Cette classe associe des noms d’actions à des classes exécutables, instancie
+ * l’action demandée, récupère le contenu produit par celle-ci puis l’intègre dans
+ * la page principale de l’application.
+ *
+ * Elle assure également la construction de l’enveloppe HTML commune, incluant la
+ * navigation, les icônes SVG et les liens adaptés à l’état de session de
+ * l’utilisateur.
+ *
+ * Une exception est levée lorsqu’aucune route enregistrée ne correspond à
+ * l’action demandée.
+ */
 class Dispatcher
 {
     protected ?string $action = null;
@@ -45,6 +59,13 @@ class Dispatcher
     ];
 
 
+    /**
+     * Génère le balisage SVG correspondant à l’icône demandée.
+     *
+     * @param string $nom Nom de l’icône à générer.
+     * @param string $taille Classe CSS définissant la taille de l’icône.
+     * @return string Balisage SVG de l’icône.
+     */
     private function icone(string $nom, string $taille = 'size-6'): string
 
     {
@@ -59,6 +80,13 @@ class Dispatcher
             . '<path d="' . self::ICONES[$nom] . '"/></svg>';
     }
 
+    /**
+     * Génère et affiche la page complète de l’application avec la navigation, le contenu principal et le pied de page.
+     * Recupère le rendu des actions et l'intègre pour l'affichage.
+     *
+     * @param string $main Contenu principal à intégrer dans la page.
+     * @return void
+     */
     private function renderPage(string $main): void
     {
         if (isset($_SESSION['user'])){

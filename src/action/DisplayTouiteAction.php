@@ -6,6 +6,12 @@ use touiteur\render\TouiteRendererCompact;
 use touiteur\render\TouiteRendererLong;
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Action chargée d’afficher un touite spécifique à partir de son identifiant.
+ *
+ * Récupère le touite demandé via le dépôt, le confie à un moteur de rendu détaillé,
+ * puis retourne le contenu HTML généré pour son affichage.
+ */
 class DisplayTouiteAction extends Action{
 
 

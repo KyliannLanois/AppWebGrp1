@@ -2,9 +2,6 @@
 
 namespace touiteur\repository;
 
-
-
-use Couchbase\InsertOptions;
 use Exception;
 use PDO;
 use touiteur\objet\Image;
@@ -12,15 +9,37 @@ use touiteur\objet\Tag;
 use touiteur\objet\Touite;
 use touiteur\objet\User;
 
+/**
+ * Dépôt centralisant l'accès aux données liées aux touites, aux tags et aux abonnements.
+ *
+ * Cette classe encapsule la connexion PDO et fournit les opérations de persistance
+ * nécessaires à la consultation, la création et l'association des entités principales
+ * de l'application.
+ *
+ * La configuration de la base de données doit être chargée avant l'instanciation du dépôt.
+ * L'accès peut être mutualisé dans l'application via l'instance unique retournée par
+ * la méthode dédiée.
+ *
+ * Les méthodes de création valident les données reçues et peuvent lever une exception
+ * lorsque les contraintes métier ou les préconditions d'accès à la base ne sont pas
+ * respectées.
+ *
+ * @throws Exception Lorsque la configuration de la base de données n'a pas été chargée
+ *                   ou lorsque la connexion ne peut pas être initialisée.
+ */
 class TouiteRepository {
 
     private static ?array $config= null;
     private static ?TouiteRepository $instance=null;
     private PDO $pdo;
 
-    // Nombre de touites par page (utilisé par la pagination partout dans l'appli)
+    // Nombre de touites par page (utilisé pour la pagination partout dans l'appli)
     public const LIMITE = 20;
 
+    /***
+     * Initialise la connexion à la base de données
+     * @throws Exception
+     */
     public function __construct (){
         if (self::$config === null){
             throw new Exception("La config n'a pas été chargée");
@@ -40,7 +59,12 @@ class TouiteRepository {
         ]);
     }
 
-
+    /***
+     * Initialise la configuration de la base de données
+     * @param String $file
+     * @return void
+     * @throws Exception
+     */
     public static function setConfig (String $file): void{
         $conf = parse_ini_file($file);
         if ($conf === false){
@@ -49,7 +73,10 @@ class TouiteRepository {
         self::$config = $conf;
     }
 
-
+    /***
+     * Utilisé partout dans l'application, renvoie une instance de TouiteRepository avec la configuration de la base de données et connection.
+     * @return TouiteRepository
+     */
     public static function getInstance() : TouiteRepository{
         if (self::$instance === null){
             self::$instance = new TouiteRepository();
@@ -58,19 +85,19 @@ class TouiteRepository {
     }
 
 
-    public function getPDO(): PDO {
-        return $this->pdo;
-    }
-
-
-
-
+    /***
+     * Renvoie toutes les touites avec pagination et ordre chronologique ou anti chronologique.
+     * @param int $page la page à afficher
+     * @param string $ordre ordre chrono ou anti chrono
+     * @return array
+     */
     public function getAllTouites(int $page = 1, string $ordre = 'desc'): array{
+        // recuperation des données pour l'affichage des touites
         $page = max(1, $page);
         $offset = ($page - 1) * self::LIMITE;
-        // la direction ne peut pas être bindée en PDO : liste blanche
         $direction = (strtolower($ordre) === 'asc') ? 'ASC' : 'DESC';
 
+        //requete
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite, t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img, t.score
@@ -81,6 +108,7 @@ class TouiteRepository {
             ORDER BY t.date_touite $direction, t.id_touite $direction
             LIMIT :limit OFFSET :offset";
 
+        //execution de la requete
         $stmt = $this->pdo->prepare($sql);
         $stmt->bindValue(':limit', self::LIMITE, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -90,23 +118,32 @@ class TouiteRepository {
         return ($this->getTouites($rows));
     }
 
-
+    /***
+     * Ajoute un touite à la base de données
+     * @param string $username
+     * @param string $texte
+     * @param int|null $id_image
+     * @return string
+     */
     public function addTouite(string $username, string $texte, ?int $id_image = null): string{
-
+        //validation des données
         $texte = trim($texte);
         if ($texte === '' || mb_strlen($texte) > 235) {
             throw new \InvalidArgumentException("Le touite doit faire entre 1 et 235 caractères");
         }
+
+        //requete
         $sql = "SELECT id_user FROM utilisateur WHERE username = :username";
         $stmt0 = $this->pdo->prepare($sql);
         $stmt0->execute(['username' => $username]);
 
         $id_user = $stmt0->fetchColumn();
         if ($id_user === false){
+            // dans le cas ou la création auto de l'user est un echec
             throw new \InvalidArgumentException("Le utilisateur n'existe pas");
         }
 
-
+        //execution de la requete
         $sql = "INSERT INTO touite (id_user, texte_touite, id_image) VALUES (:id_user, :texte_touite, :id_image)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -117,15 +154,21 @@ class TouiteRepository {
 
         $id = $this->pdo->lastInsertId();
 
+        //mise à jour du nombre de touites de l'utilisateur
         $stmt = $this->pdo->prepare("UPDATE utilisateur SET nb_touites = nb_touites + 1 WHERE id_user = :id_user");
         $stmt->execute(['id_user' => $id_user]);
 
         return $id;
     }
 
-    //TODO rajouter le systeme d'évaluation
-
+    /***
+     * Ajoute un tag donné dans la base de données
+     * @param string $libelle_tag
+     * @param string $description
+     * @return int
+     */
     public function addTag(string $libelle_tag,string $description): int{
+        // recupération et validation des données
         $libelle_tag = trim($libelle_tag);
         $description = trim($description);
         if($libelle_tag === ''|| mb_strlen($libelle_tag) > 50){
@@ -152,6 +195,13 @@ class TouiteRepository {
         $id = $this->pdo->lastInsertId();
         return $id;
     }
+
+
+    /***
+     * Récupère un tag par son libellé
+     * @param string $libelle_tag
+     * @return Tag|null
+     */
     public function getTag(string $libelle_tag): ?Tag
     {
         $querySelect = "SELECT * FROM tag WHERE libelle_tag = :libelle_tag";
@@ -165,6 +215,12 @@ class TouiteRepository {
         return null;
     }
 
+
+    /***
+     * Recupère un tag par son id
+     * @param int $id_Tag
+     * @return Tag|null
+     */
     public function getTagById(int $id_Tag): ?Tag{
         $querySelect = "SELECT * FROM tag WHERE id_tag = :id_tag";
         $stmtSelect = $this->pdo->prepare($querySelect);
@@ -176,7 +232,14 @@ class TouiteRepository {
         return null;
     }
 
+    /***
+     * Associe un tag à un utilisateur (abonnement)
+     * @param int $id_tag
+     * @param int $id_user
+     * @return bool
+     */
     public function linkTagUser(int $id_tag, int $id_user):bool{
+        //test sur les données avant de les modifier
         $sql = "SELECT COUNT(*) FROM abonnement_tag 
             WHERE id_user = :id_user AND id_tag = :id_tag";
         $stmt = $this->pdo->prepare($sql);
@@ -189,6 +252,7 @@ class TouiteRepository {
             return false;
         }
 
+        // si tout est ok, on peut ajouter l'abonnement
         $sql = "INSERT INTO abonnement_tag (id_user, id_tag) 
             VALUES (:id_user, :id_tag)";
         $stmt = $this->pdo->prepare($sql);
@@ -200,6 +264,12 @@ class TouiteRepository {
         return true;
     }
 
+    /***
+     * Associe un tag à une touite
+     * @param int $id_touite
+     * @param int $id_tag
+     * @return bool
+     */
     public function linkTouiteTag(int $id_touite, int $id_tag):bool{
         $sql = "SELECT COUNT(*) FROM touite_tag 
             WHERE id_touite = :id_touite AND id_tag = :id_tag";
@@ -224,6 +294,14 @@ class TouiteRepository {
         return true;
     }
 
+    /***
+     * Ajoute un utilisateur à la base de données
+     * @param string $username
+     * @param string|null $nom_user
+     * @param string|null $prenom_user
+     * @param string|null $email_user
+     * @return string
+     */
     public function addUser(string $username,?string $nom_user = null,?string $prenom_user=null,?string $email_user=null):string{
         $username = trim($username);
         $nom_user = $nom_user !== null ? trim($nom_user) : null;
@@ -255,6 +333,11 @@ class TouiteRepository {
         return $id;
     }
 
+    /***
+     * Recupere un utilisateur à partir de son nom d'utilisateur
+     * @param string $username
+     * @return User
+     */
     public function getUser(string $username):User{
         $sql = "SELECT * FROM utilisateur WHERE username = :username";
         $stmt = $this->pdo->prepare($sql);
@@ -275,6 +358,11 @@ class TouiteRepository {
         return $user;
     }
 
+    /***
+     * Recupere la liste des touites d'un utilisateur à partir de son id
+     * @param int $iduser
+     * @return array
+     */
     public function getListTouiteUser(int $iduser): array
     {
 
@@ -287,6 +375,7 @@ class TouiteRepository {
             WHERE t.id_user = :iduser
             GROUP BY t.id_touite, t.texte_touite, t.date_touite,t.id_image, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
             ORDER BY t.date_touite DESC";
+
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
             'iduser' => $iduser
@@ -297,6 +386,12 @@ class TouiteRepository {
         return ($this->getTouites($rows));
     }
 
+
+    /***
+     * Recupere la liste des touites d'un utilisateur à partir de son id mais renvois les touites dans l'ordre antihorraire.
+     * @param int $iduser
+     * @return array
+     */
     public function getListTouiteUserInverse(int $iduser): array
     {
 
@@ -319,6 +414,12 @@ class TouiteRepository {
         return ($this->getTouites($rows));
     }
 
+    /***
+     * Recupère la liste des touites lié à un tag ou utilisateur suivis par l'utilisateur donné en paramètre (par id))
+     * @param int $iduser
+     * @param int $page
+     * @return array
+     */
     public function getTouiteAbonnement(int $iduser, int $page = 1) : array{
         $page = max(1, $page);
         $offset = ($page - 1) * self::LIMITE;
@@ -349,18 +450,13 @@ class TouiteRepository {
     }
 
 
-
-
-
-
-
-
-
-
-    public function getListTouiteTag(int $id_tag): array ///TODO ajouter les tag (VRM dans la base)
+    /***
+     * Recupère la liste des touites lié à un tag avec son id passé en param
+     * @param int $id_tag
+     * @return array
+     */
+    public function getListTouiteTag(int $id_tag): array
     {
-
-
 
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
@@ -384,14 +480,11 @@ class TouiteRepository {
         return ($this->getTouites($rows));
     }
 
-
-
-
-
-
-
-
-
+    /***
+     * Recupère un touite avec son id passé en param
+     * @param array $rows
+     * @return array
+     */
     public function getTouites(array $rows):array{
         $touites = [];
 
@@ -426,6 +519,11 @@ class TouiteRepository {
 
     }
 
+    /***
+     * Recupère un utilisateur avec son id passé en param
+     * @param string $id_user
+     * @return User
+     */
     public function getUserById(string $id_user):User{
         $sql = "SELECT * FROM utilisateur WHERE id_user = :id_user";
         $stmt = $this->pdo->prepare($sql);
@@ -471,6 +569,11 @@ class TouiteRepository {
         return $touite;
     }
 
+    /***
+     * Recupère le score d'un utilisateur avec son id passé en param
+     * @param $idUser
+     * @return int
+     */
     public function calculerScore($idUser) : int {
         $sql = "SELECT SUM(score) FROM touite WHERE id_user = :id_user";
         $stmt = $this->pdo->prepare($sql);
@@ -479,6 +582,12 @@ class TouiteRepository {
         return $row['SUM(score)'] ?? 0;
     }
 
+    /***
+     * Permet de faire en sorte que l'utilisateur aime un touite
+     * @param int $idTouite
+     * @param int $userId
+     * @return void
+     */
     public function likeTouite(int $idTouite, int $userId): void
     {
         $sql = "SELECT valeur FROM evaluation
@@ -517,6 +626,13 @@ class TouiteRepository {
             }
         }
     }
+
+    /***
+     * Permet de faire en sorte que l'utilisateur dislike un touite
+     * @param int $idTouite
+     * @param int $userId
+     * @return void
+     */
     public function dislikeTouite(int $idTouite, int $userId): void
     {
         $sql = "SELECT valeur FROM evaluation
@@ -556,6 +672,12 @@ class TouiteRepository {
         }
     }
 
+    /***
+     * Abonne un utilisateur à un autre
+     * @param int $idFollower
+     * @param int $idFollowed
+     * @return void
+     */
     public function abonnerUser(int $idFollower,int $idFollowed) : void{
         if ($idFollower == $idFollowed) {
             return;
@@ -576,6 +698,12 @@ class TouiteRepository {
         }
     }
 
+    /***
+     * Abonne un utilisateur à un tag
+     * @param int $idUser
+     * @param int $idTag
+     * @return void
+     */
     public function abonnerTag(int $idUser,int $idTag) : void{
         $sql = "SELECT * FROM abonnement_tag WHERE id_user = :idUser AND id_tag = :idTag";
         $stmt = $this->pdo->prepare($sql);
@@ -593,6 +721,12 @@ class TouiteRepository {
         }
     }
 
+    /***
+     * Vérifie si un utilisateur est abonné à un autre
+     * @param int $idFollowed
+     * @return string
+     */
+
     public function estAbonne(int $idFollowed) : string {
         if(isset($_SESSION['user'])){
             $sql = "SELECT * FROM abonnement_user WHERE id_follower = :idFollower AND id_followed = :idFollowed";
@@ -606,6 +740,12 @@ class TouiteRepository {
         return "s'abonner";
     }
 
+
+    /***
+     * Verifie si un utilisateur est abonné à un tag
+     * @param int $idTag
+     * @return string
+     */
     public function suisTag(int $idTag) : string{
         if(isset($_SESSION['user'])){
             $sql = "SELECT * FROM abonnement_tag WHERE id_user = :idUser AND id_tag = :idTag";
@@ -619,6 +759,10 @@ class TouiteRepository {
         return "suivre";
     }
 
+    /***
+     * Récupère le classement des influenceurs par rapport au nombre de followers
+     * @return array
+     */
     public function classementInfluenceurs(): array{
         $sql = "SELECT u.id_user, u.username, 
        (SELECT COUNT(*) FROM touite t where t.id_user = u.id_user) as nbTouites,
@@ -632,11 +776,20 @@ class TouiteRepository {
 
     }
 
+    /***
+     * Récupère le nombre total de touites
+     * @return int
+     */
     public function countTouites(): int{
         $stmt = $this->pdo->query("SELECT COUNT(*) FROM touite");
         return (int) $stmt->fetchColumn();
     }
 
+    /***
+     * Récupère le nombre total de touites abonnées à un utilisateur
+     * @param int $id_user
+     * @return int
+     */
     public function countTouitesAbonnement(int $id_user): int {
         $sql = "SELECT COUNT(*)
             FROM touite t
@@ -655,6 +808,11 @@ class TouiteRepository {
     }
 
 
+    /***
+     * Récupère toutes les personnes abonnées à un utilisateur
+     * @param int $id_user
+     * @return array
+     */
     public function getAllAbonnees(int $id_user): array {
         $sql = "SELECT u.id_user, u.username, u.nom_user, u.prenom_user, u.nb_touites from utilisateur u
         JOIN abonnement_user au ON u.id_user = au.id_follower
@@ -667,6 +825,12 @@ class TouiteRepository {
     }
 
 
+    /**
+     * Calcule le score moyen des touites publiés par un utilisateur.
+     *
+     * @param int $id_user Identifiant de l'utilisateur concerné.
+     * @return float Score moyen des touites de l'utilisateur, arrondi à deux décimales, ou 0.0 si aucun score n'est disponible.
+     */
     public function getScoreMoyenUser (int $id_user): float {
         $sql="SELECT AVG(sous_req.score_touite)
         FROM (
@@ -686,6 +850,11 @@ class TouiteRepository {
     }
 
 
+    /**
+     * Récupère la liste des tags les plus mentionnés dans les touites, triés par nombre de mentions décroissant puis par libellé.
+     *
+     * @return array
+     */
     public function getTendances() :array
     {
         $sql = " SELECT t.id_tag, t.libelle_tag, t.desc_tag, COUNT(tt.id_touite) AS nb_mentions
@@ -699,7 +868,13 @@ class TouiteRepository {
     }
 
 
-    public function addImg(string $description,string $path) : int{
+    /**
+     * Ajoute une image avec sa description et son chemin, puis retourne l'identifiant généré.
+     * @param string $description
+     * @param string $path
+     * @return int
+     */
+    public function addImg(string $description, string $path) : int{
         $sql = "INSERT INTO image (desc_image,chemin_img) 
             VALUES (:desc_image, :chemin_img)";
         $stmt = $this->pdo->prepare($sql);
@@ -714,6 +889,12 @@ class TouiteRepository {
 
     }
 
+    /**
+     * Récupère l'image correspondant à l'identifiant donné.
+     *
+     * @param int $id_image Identifiant de l'image à récupérer.
+     * @return Image Image associée à l'identifiant fourni.
+     */
     public function getImg(int $id_image) : Image{
         $sql = "SELECT * FROM image WHERE id_image = :id_image";
         $stmt = $this->pdo->prepare($sql);

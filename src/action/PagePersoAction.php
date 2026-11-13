@@ -5,6 +5,16 @@ namespace touiteur\action;
 use touiteur\render\TouiteRendererCompact;
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Action chargée de générer la page personnalisée de l’utilisateur connecté.
+ *
+ * Récupère les touites provenant des abonnements de l’utilisateur, applique une
+ * pagination sécurisée à partir du paramètre de requête, puis produit le contenu
+ * HTML correspondant avec les liens de navigation entre les pages disponibles.
+ *
+ * Cette action s’appuie sur l’utilisateur enregistré en session et sur le dépôt
+ * des touites pour déterminer les contenus à afficher.
+ */
 class PagePersoAction extends Action
 {
     public function execute(): string

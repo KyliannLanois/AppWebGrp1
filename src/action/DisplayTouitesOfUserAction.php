@@ -6,6 +6,16 @@ use touiteur\action\Action;
 use touiteur\render\TouiteRendererCompact;
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Action chargée d’afficher la liste des touites publiés par un utilisateur donné.
+ *
+ * Récupère l’utilisateur à partir de l’identifiant fourni dans la requête, charge ses touites
+ * depuis le dépôt, puis génère le contenu de la page avec les options de tri disponibles.
+ *
+ * La liste peut être affichée par ordre chronologique croissant ou décroissant selon le
+ * paramètre de tri transmis. L’action ajoute également un lien permettant de s’abonner ou de
+ * se désabonner de l’utilisateur consulté, ainsi qu’un lien de retour vers la page précédente.
+ */
 class DisplayTouitesOfUserAction extends Action
 {
 

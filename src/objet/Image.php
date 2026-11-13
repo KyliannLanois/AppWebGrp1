@@ -2,6 +2,12 @@
 
 namespace touiteur\objet;
 
+/**
+ * Représente une image caractérisée par un identifiant, une description et un chemin d’accès.
+ *
+ * Cette classe fournit les méthodes nécessaires pour initialiser une image,
+ * consulter ses informations principales et modifier ses valeurs associées.
+ */
 class Image
 {
     private int $id;

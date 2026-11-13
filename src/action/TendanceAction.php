@@ -4,6 +4,16 @@ namespace touiteur\action;
 
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Action responsable de l’affichage des tendances.
+ *
+ * Cette action récupère les tags les plus mentionnés depuis le dépôt des touites,
+ * puis génère le contenu HTML correspondant à la liste des tendances.
+ * Si aucune tendance n’est disponible, un message d’information est retourné.
+ *
+ * Les libellés et descriptions des tags sont échappés avant leur insertion dans
+ * le rendu afin de limiter les risques liés à l’affichage de données utilisateur.
+ */
 class TendanceAction extends Action
 {
 

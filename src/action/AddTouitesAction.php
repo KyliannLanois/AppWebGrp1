@@ -10,6 +10,24 @@ use touiteur\objet\Tag;
 use touiteur\objet\Touite;
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Action chargée de la création d’un nouveau touite.
+ *
+ * Cette action traite l’affichage du formulaire de publication ainsi que la
+ * soumission d’un touite par requête POST. Elle valide le contenu textuel,
+ * contrôle éventuellement l’image transmise, enregistre le touite, associe les
+ * tags détectés dans le texte et relie ces tags à l’utilisateur concerné.
+ *
+ * Le texte du touite doit être renseigné et ne pas dépasser la limite autorisée.
+ * Lorsqu’une image est fournie, son envoi, sa taille maximale et son type MIME
+ * sont vérifiés avant son déplacement dans le répertoire prévu. En cas d’erreur
+ * de validation ou de transfert, un message d’erreur est renvoyé sous forme de
+ * chaîne HTML.
+ *
+ * Après une publication réussie, l’utilisateur est redirigé vers l’action par
+ * défaut. En l’absence de soumission, l’action renvoie le formulaire de création,
+ * prérempli avec le nom d’utilisateur stocké en session lorsqu’il existe.
+ */
 class AddTouitesAction extends Action {
 
 

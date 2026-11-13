@@ -7,18 +7,44 @@ use touiteur\objet\Touite;
 use touiteur\render\Renderer;
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Classe abstraite de base pour le rendu d’un touite.
+ *
+ * Fournit le comportement commun aux rendus de touites, notamment la sélection
+ * du format d’affichage et la transformation des tags présents dans le texte.
+ * Les classes dérivées doivent définir les rendus compact et détaillé selon
+ * leurs besoins.
+ *
+ * Le rendu s’appuie sur un touite à afficher et sur un dépôt permettant de
+ * récupérer les informations associées aux tags détectés dans son contenu.
+ *
+ * @implements Renderer
+ */
 abstract class TouiteRendererDefault implements Renderer {
 
     protected Touite $touite;
     protected TouiteRepository $repo;
 
-    public function __construct(Touite $touite,TouiteRepository $repo)
+    /**
+     * Initialise une nouvelle instance avec le touite et le dépôt associés.
+     *
+     * @param Touite $touite Le touite à utiliser.
+     * @param TouiteRepository $repo Le dépôt permettant d’accéder aux touites.
+     * @return void
+     */
+    public function __construct(Touite $touite, TouiteRepository $repo)
     {
         $this->touite = $touite;
         $this->repo = $repo;
     }
 
 
+    /**
+     * Génère la représentation textuelle selon le format demandé.
+     *
+     * @param int $selector Sélecteur de rendu à utiliser, par défaut le format compact.
+     * @return string Représentation générée dans le format sélectionné.
+     */
     public function render(int $selector = self::COMPACT): string {
         switch ($selector) {
             case self::LONG:
@@ -30,6 +56,12 @@ abstract class TouiteRendererDefault implements Renderer {
     }
 
     public abstract function renderCompact():string;
+
+    /**
+     * Génère la représentation textuelle longue de l'objet.
+     *
+     * @return string Représentation générée au format long.
+     */
     public abstract function renderLong():string;
 
     /**

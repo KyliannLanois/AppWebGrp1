@@ -6,6 +6,16 @@ use touiteur\action\Action;
 use touiteur\render\TouiteRendererCompact;
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Représente l’action chargée d’afficher la page associée à un tag.
+ *
+ * Cette action récupère le tag demandé à partir de l’identifiant fourni dans la requête,
+ * affiche son libellé, propose l’action d’abonnement correspondante et liste les touites
+ * associés à ce tag sous forme compacte.
+ *
+ * Si aucun touite n’est associé au tag, un message d’absence de contenu est retourné.
+ * Le rendu inclut également un lien permettant de revenir à la page précédente.
+ */
 class DisplayTagPage extends Action
 {
 

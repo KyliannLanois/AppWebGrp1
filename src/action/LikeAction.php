@@ -16,6 +16,9 @@ class LikeAction extends Action
             exit();
         }
 
+        /**
+         * Identifiant unique de l’utilisateur.
+         */
         $userId = $repo->getUser($_SESSION['user'])->getIdUser();
 
 

@@ -1,17 +1,54 @@
 <?php
 
 
+/**
+ * Rend un touite sous une forme détaillée.
+ *
+ * Produit une représentation longue d'un touite avec son auteur, son contenu,
+ * son image éventuelle, sa date, son score et les actions associées.
+ */
+
 namespace touiteur\render;
 
-use touiteur\repository\TouiteRepository;
+use /**
+ * Référentiel chargé de l’accès aux données des touites.
+ *
+ * Centralise les opérations de recherche, de lecture et de persistance
+ * associées aux touites afin d’isoler la logique d’accès aux données du reste
+ * de l’application.
+ *
+ * @package touiteur\repository
+ */
+    touiteur\repository\TouiteRepository;
 
+/**
+ * Rend un touite au format détaillé.
+ *
+ * Cette classe étend le rendu par défaut afin de produire une représentation complète
+ * d’un touite, incluant son contenu, son auteur, sa date, son score, son image éventuelle
+ * ainsi que les actions associées comme l’abonnement, le retour, le like et le dislike.
+ *
+ * Le rendu généré est destiné à l’affichage d’un touite isolé ou consulté en détail.
+ */
 class TouiteRendererLong extends TouiteRendererDefault{
 
+    /**
+     * Génère le rendu textuel en utilisant le sélecteur indiqué.
+     *
+     * @param int $selector Sélecteur de rendu à appliquer.
+     * @return string Résultat du rendu sous forme de chaîne.
+     */
     public function render(int $selector = 1): string
     {
         return $this->renderLong();
     }
 
+    /**
+     * Génère le rendu détaillé du touite avec son auteur, son contenu, son image éventuelle,
+     * son score, sa date et les actions associées.
+     *
+     * @return string Code HTML du rendu détaillé du touite.
+     */
     public function renderLong(): string
     {
 
@@ -61,6 +98,11 @@ class TouiteRendererLong extends TouiteRendererDefault{
        }
 
 
+    /**
+     * Génère le rendu compact du touite associé.
+     *
+     * @return string Résultat du rendu compact sous forme de chaîne.
+     */
     public function renderCompact(): string
     {
         return (new TouiteRendererCompact($this->touite))->renderCompact();

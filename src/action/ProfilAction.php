@@ -5,6 +5,17 @@ namespace touiteur\action;
 use touiteur\render\TouiteRendererCompact;
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Action chargée d’afficher le profil de l’utilisateur connecté.
+ *
+ * Récupère l’utilisateur courant depuis la session, charge ses informations
+ * et ses touites depuis le dépôt, puis construit le contenu HTML de la page
+ * de profil. La page affiche un message de bienvenue, un lien vers la liste
+ * des abonnés, les touites publiés par l’utilisateur, son score total ainsi
+ * qu’un lien de déconnexion.
+ *
+ * @return string Contenu HTML représentant la page de profil de l’utilisateur connecté.
+ */
 class ProfilAction extends Action
 {
     public function execute(): string

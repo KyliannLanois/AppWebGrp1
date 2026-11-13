@@ -4,6 +4,17 @@ namespace touiteur\action;
 
 use touiteur\repository\TouiteRepository;
 
+/**
+ * Action chargée d'afficher les statistiques d'abonnement de l'utilisateur connecté.
+ *
+ * Cette action vérifie la présence d'une session utilisateur, récupère les informations
+ * de l'utilisateur courant, son score moyen de touites ainsi que la liste de ses abonnés.
+ * Elle génère ensuite le contenu destiné à présenter le nombre d'abonnés, leurs informations
+ * principales et le nombre de touites publiés par chacun.
+ *
+ * Si aucun utilisateur n'est connecté, un message d'information est retourné afin
+ * d'indiquer que l'accès à ces données nécessite une authentification.
+ */
 class AfficherAbonneeAction extends Action
 {
 

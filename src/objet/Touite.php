@@ -3,6 +3,13 @@
 namespace touiteur\objet;
 
 
+/**
+ * Représente un touite publié par un utilisateur.
+ *
+ * Un touite regroupe les informations nécessaires à son identification,
+ * à son affichage et à son évaluation, notamment son auteur, sa date,
+ * son contenu textuel, une image éventuelle, des tags éventuels et un score.
+ */
 class Touite
 {
     private int $id_touite;
