@@ -40,7 +40,7 @@ class ConnexionAction extends Action
         $safeText = htmlspecialchars($ancientexte);
         return <<< HTML
         <section class="connexion-action">
-            <h2>Saisissez votre pseudonyme</h2>
+            <h1 class="text-lg dark:text-gray-400 font-bold">Saisissez votre pseudonyme</h1>
             <form method="POST" action="?action=connexion">
                 <div class="flex flex-col border border-gray-200 rounded-md p-4 shadow-lg dark:border-gray-400 dark:shadow-gray-600/50 dark:bg-slate-950">
                     <label for="username" class="text-sm dark:text-gray-400">Rentrer ci-dessous votre pseudo : </label><br>

@@ -111,38 +111,38 @@ class Dispatcher
         
             
         <body class="dark:bg-black bg-gray-100">
-        <div class="flex min-h-screen mx-auto flex min-h-screen max-w-6xl justify-center">
+        <div class="flex min-h-screen w-full">
         
 
-            <header class="sticky top-0 flex h-screen w-48 shrink-0 flex-col justify-between border-r border-gray-200 px-3 py-4">
+            <header class="sticky top-0 flex h-screen w-64 shrink-0 flex-col justify-between border-r border-gray-200 px-3 py-4">
             <div>
             <a href="?action=default" class="mb-2 flex h-14 w-fit items-center justify-center rounded-full gap-2 px-4 text-2xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">{$iLogo}<span class="w-fit xl:inline">Touiteur</span></a>
-            <nav class="flex flex-col gap-1 dark:border-gray-600 dark:bg-slate-950 p-4">
+            <nav class="flex flex-col gap-1 dark:border-gray-600 dark:bg-slate-950 p-3">
             
-            <a href="?action=afficherTendances" class="mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">{$iTendances}Tendances</a>
+            <a href="?action=afficherTendances" class="gap-2 mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">{$iTendances}Tendances</a>
         HTML;
         if (isset($_SESSION['user'])){
             $html .= <<<HTML
-                <a href="?action=profil" class="mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">{$iProfil}Profil</a>
+                <a href="?action=profil" class="gap-2 mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">{$iProfil}Profil</a>
                 
                 HTML;
         } else {
             $html .= <<<HTML
-                <a href="?action=connexion" class="mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">{$iProfil}Profil</a>
+                <a href="?action=connexion" class="gap-2 mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">{$iProfil}Profil</a>
                 HTML;
         }
-        $html .= <<<HTML
-            <a href="?action=add-touite" class="mt-4 flex items-center justify-center rounded-full bg-blue-500 py-3 text-lg font-bold text-white hover:bg-blue-600 transition">Ajouter touites</a>
-       HTML;
         if (isset($_SESSION['user'])){
             $html .= <<<HTML
-                <a href="?action=pagePerso" class="flex w-fit items-center gap-2 rounded-full px-3 py-2 text-sm text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-900">{$iFil}Mon fil</a>
+                <a href="?action=pagePerso" class="gap-2 mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">{$iFil}Mon fil</a>
                 HTML;
         } else {
             $html .= <<<HTML
-                <a href="?action=connexion" class="flex w-fit items-center gap-2 rounded-full px-3 py-2 text-sm text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-900">{$iConnexion}Connexion</a>
+                <a href="?action=connexion" class="gap-2 mb-2 flex h-14 w-fit items-center justify-center rounded-full px-4 text-xl font-extrabold dark:text-white dark:hover:bg-gray-900 text-black hover:bg-gray-200 xl:justify-start">{$iConnexion}Connexion</a>
                 HTML;
         }
+        $html .= <<<HTML
+            <a href="?action=add-touite" class="mt-4 flex items-center justify-center rounded-full bg-blue-500 px-4 py-3 text-base font-bold text-white hover:bg-blue-600 transition whitespace-nowrap">Ajouter touites</a>
+       HTML;
 
         $html .= <<<HTML
            </nav>

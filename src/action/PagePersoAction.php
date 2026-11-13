@@ -39,7 +39,7 @@ class PagePersoAction extends Action
 
         $html = <<<HTML
         <div class="flex flex-col gap-2">
-            <h3 class="text-lg dark:text-gray-400 font-bold ">Votre page personnalisée</h3>
+            <h1 class="text-lg dark:text-gray-400 font-bold ">Votre page personnalisée</h1>
             <a href="?action=profil" class="border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700 text-center font-bold dark:text-gray-400">Accedez à votre profil</a><br><br>
         </div>
 HTML;

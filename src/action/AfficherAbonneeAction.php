@@ -33,7 +33,7 @@ class AfficherAbonneeAction extends Action
         $scoreMoyen = $repo->getScoreMoyenUser($user_id);
 
         $html = "<section class='narcissique-action'>";
-        $html .= "<h3 class='text-lg dark:text-gray-400 font-bold'>Vos statistiques et abonnés</h3>";
+        $html .= "<h1 class='text-lg dark:text-gray-400 font-bold'>Vos statistiques et abonnés</h1>";
         $html .= "<p class='text-lg dark:text-gray-400'><strong>Score moyen de vos touites :</strong> {$scoreMoyen}</p>";
 
 

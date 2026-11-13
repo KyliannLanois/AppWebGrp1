@@ -36,7 +36,7 @@ class ConnectionAdminAction extends Action
         $safeText = htmlspecialchars($ancientexte);
         return <<< HTML
         <section class="connexion-action">
-            <h2>Connexion en tant qu'administrateur</h2>
+            <h1 class="text-lg dark:text-gray-400 font-bold">Connexion en tant qu'administrateur</h1>
             <form method="POST" action="?action=connexionAdmin">
                 <div class="flex flex-col border border-gray-200 rounded-md p-4 shadow-lg dark:border-gray-400 dark:shadow-gray-600/50 dark:bg-slate-950">
                     <label for="login" class="text-sm dark:text-gray-400">Rentrer ci-dessous le login: </label><br>
