@@ -100,7 +100,7 @@ class AddTouitesAction extends Action {
         return <<< HTML
         <section class="add-touite-section">
             <h2 class="text-2xl font-bold" >Publier un nouveau touite</h2>
-            <form method="POST" action="?action=add-touite">
+            <form method="POST" action="?action=add-touite" enctype="multipart/form-data">
                 <div class="flex flex-col border border-gray-200 rounded-md p-4 shadow-lg dark:border-gray-400 dark:shadow-gray-600/50 dark:bg-slate-950">
                     <label for="username" class="text-sm dark:text-gray-400">Rentrer ci-dessous votre pseudo : </label><br>
                     <input type="text" id="username" name="username" maxlength="50" value="{$safeText}" class="px-2 py-1 border-3 border-gray-200 rounded-md dark:text-gray-400 dark:border-gray-600"><br>

@@ -38,7 +38,7 @@ class TouiteRendererLong extends TouiteRendererDefault{
         </div>
         <div class="bg-gray-200 dark:bg-slate-900 rounded-lg p-4 m-3 dark:text-gray-400">
             <p>{$this->replaceTagInText($texte)}</p>
-            <img src=$imgPath alt="Image du touite">
+            <img src=$imgPath alt="Image du touite" >
         </div>
         <div class="m-4 flex items-center gap-3">
             <a href="?action=dislike&touiteId={$touiteId}" class="inline-flex rounded-full p-2 text-gray-500 hover:bg-red-100 hover:text-red-600 transition"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
