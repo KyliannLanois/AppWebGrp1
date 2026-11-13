@@ -16,6 +16,9 @@ class TouiteRepository {
     private static ?TouiteRepository $instance=null;
     private PDO $pdo;
 
+    // Nombre de touites par page (utilisé par la pagination partout dans l'appli)
+    public const LIMITE = 20;
+
     public function __construct (){
         if (self::$config === null){
             throw new Exception("La config n'a pas été chargée");
@@ -60,7 +63,12 @@ class TouiteRepository {
 
 
 
-    public function getAllTouites(): array{
+    public function getAllTouites(int $page = 1, string $ordre = 'desc'): array{
+        $page = max(1, $page);
+        $offset = ($page - 1) * self::LIMITE;
+        // la direction ne peut pas être bindée en PDO : liste blanche
+        $direction = (strtolower($ordre) === 'asc') ? 'ASC' : 'DESC';
+
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img, t.score
@@ -68,25 +76,13 @@ class TouiteRepository {
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
             GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
-            ORDER BY t.date_touite DESC";
+            ORDER BY t.date_touite $direction, t.id_touite $direction
+            LIMIT :limit OFFSET :offset";
 
-        $stmt =     $this->pdo->query($sql);
-        $rows = $stmt->fetchAll();
-
-        return ($this->getTouites($rows));
-    }
-
-    public function getAllTouitesInverse(): array{
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
-                   u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
-                   i.chemin_img, t.score
-            FROM touite t
-            JOIN utilisateur u ON u.id_user = t.id_user
-            LEFT JOIN image i ON t.id_image = i.id_image
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
-            ORDER BY t.date_touite ASC";
-
-        $stmt =     $this->pdo->query($sql);
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', self::LIMITE, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         $rows = $stmt->fetchAll();
 
         return ($this->getTouites($rows));
@@ -282,12 +278,12 @@ class TouiteRepository {
 
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
-                   i.chemin_img
+                   i.chemin_img, t.score
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
             WHERE t.id_user = :iduser
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
             ORDER BY t.date_touite DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -304,12 +300,12 @@ class TouiteRepository {
 
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
-                   i.chemin_img
+                   i.chemin_img, t.score
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
             WHERE t.id_user = :iduser
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
             ORDER BY t.date_touite ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -321,7 +317,10 @@ class TouiteRepository {
         return ($this->getTouites($rows));
     }
 
-    public function getTouiteAbonnement(int $iduser) : array{
+    public function getTouiteAbonnement(int $iduser, int $page = 1) : array{
+        $page = max(1, $page);
+        $offset = ($page - 1) * self::LIMITE;
+
         $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
             u.id_user, u.username, u.nom_user, u.prenom_user, u.email_user,
             i.chemin_img, t.score
@@ -333,13 +332,15 @@ class TouiteRepository {
                                   FROM touite_tag tt
                                   INNER JOIN abonnement_tag at ON at.id_tag = tt.id_tag
                                   WHERE at.id_user = :iduser2)
-            ORDER BY t.date_touite DESC";
+            ORDER BY t.date_touite DESC, t.id_touite DESC
+            LIMIT :limit OFFSET :offset";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            'iduser1' => $iduser,
-            'iduser2' => $iduser
-        ]);
+        $stmt->bindValue(':iduser1', $iduser, PDO::PARAM_INT);
+        $stmt->bindValue(':iduser2', $iduser, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', self::LIMITE, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
         $rows = $stmt->fetchAll();
 
         return $this->getTouites($rows);
@@ -454,7 +455,7 @@ class TouiteRepository {
             $row['texte_touite'],
             $row['chemin_img'] ?? null,
             [], // ou null selon ce que tu veux initialiser
-        $row['score'] ?? 0
+            $row['score'] ?? 0
         );
 
 
@@ -625,68 +626,20 @@ class TouiteRepository {
     }
 
     public function countTouitesAbonnement(int $id_user): int {
-        $sql = "SELECT COUNT(DISTINCT t.id_touite)
+        $sql = "SELECT COUNT(*)
             FROM touite t
-            LEFT JOIN touite_tag tt ON t.id_touite = tt.id_touite
-            WHERE t.id_user IN (SELECT id_followed FROM abonnement_user WHERE id_follower = :id_user)
-               OR tt.id_tag IN (SELECT id_tag FROM abonnement_tag WHERE id_user = :id_user)";
+            WHERE t.id_user IN (SELECT id_followed FROM abonnement_user WHERE id_follower = :iduser1)
+               OR t.id_touite IN (SELECT tt.id_touite
+                                  FROM touite_tag tt
+                                  INNER JOIN abonnement_tag at ON at.id_tag = tt.id_tag
+                                  WHERE at.id_user = :iduser2)";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute(['id_user' => $id_user]);
+        $stmt->execute([
+            'iduser1' => $id_user,
+            'iduser2' => $id_user
+        ]);
         return (int)$stmt->fetchColumn();
-    }
-
-
-    public function getTouitesPages(int $page=1, int $limit = 20): array
-    {
-        $page = max(1, $page);
-        $offset = ($page - 1) * $limit;
-
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
-                   u.id_user, u.nb_touites, u.username, u.nom_user, u.prenom_user, u.email_user,
-                   i.chemin_img
-            FROM touite t
-            JOIN utilisateur u ON u.id_user = t.id_user
-            LEFT JOIN image i ON t.id_image = i.id_image
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user, u.nb_touites, u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
-            ORDER BY t.date_touite DESC
-            LIMIT :limit OFFSET :offset";
-
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
-        $stmt->execute();
-
-        $rows = $stmt->fetchAll();
-        return $this->getTouites($rows);
-    }
-
-    public function getTouiteAbonnementPage(int $id_user, int $page = 1, int $limit = 20): array
-    {
-        $page = max(1, $page);
-        $offset = ($page - 1) * $limit;
-
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
-                   u.id_user, u.nb_touites, u.username, u.nom_user, u.prenom_user, u.email_user,
-                   i.chemin_img
-            FROM touite t
-            JOIN utilisateur u ON u.id_user = t.id_user
-            LEFT JOIN image i ON t.id_image = i.id_image
-            LEFT JOIN touite_tag tt ON t.id_touite = tt.id_touite
-            WHERE t.id_user IN (SELECT id_followed FROM abonnement_user WHERE id_follower = :id_user)
-               OR tt.id_tag IN (SELECT id_tag FROM abonnement_tag WHERE id_user = :id_user)
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user, u.nb_touites, u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
-            ORDER BY t.date_touite DESC
-            LIMIT :limit OFFSET :offset";
-
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindValue(':id_user', $id_user, \PDO::PARAM_INT);
-        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
-        $stmt->execute();
-
-        $rows = $stmt->fetchAll();
-        return $this->getTouites($rows);
     }
 
 
@@ -726,7 +679,7 @@ class TouiteRepository {
             FROM tag t
             JOIN touite_tag tt ON t.id_tag = tt.id_tag
             GROUP BY t.id_tag, t.libelle_tag, t.desc_tag
-            ORDER BY nb_mentions ASC, t.libelle_tag ASC";
+            ORDER BY nb_mentions DESC, t.libelle_tag ASC";
 
         $stmt = $this->pdo->query($sql);
         return $stmt->fetchAll();

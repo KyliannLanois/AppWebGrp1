@@ -12,32 +12,28 @@ class HomeAction extends Action {
 
 
         $ordre = (isset($_GET['ordre']) && $_GET['ordre'] === 'asc') ? 'asc' : 'desc';
-        $page = isset($_GET['ordre']) ? (int)$_GET['page'] : 1;
-        if ($page <1) {
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        if ($page < 1) {
             $page = 1;
         }
 
-        $limit = 20;
         $totalTouites = $repo->countTouites();
-        $totalPages = max(1,(int)ceil($totalTouites / $limit));
+        $totalPages = max(1, (int)ceil($totalTouites / TouiteRepository::LIMITE));
 
-        if ($page>$totalPages){
-            $page=$totalPages;
-            }
+        if ($page > $totalPages) {
+            $page = $totalPages;
+        }
 
-        $touites = $repo->getTouitesPages($page, $limit, $ordre);
+        $touites = $repo->getAllTouites($page, $ordre);
 
         $html = "<section class='touite-action'>";
         $html .= "<h2 class='text-lg dark:text-gray-400 font-bold'>Derniers touites publiés</h2>";
         $html .= <<<HTML
         <details>
-        <summary>Trier par</summary>
-            <a href="?action=home&ordre=desc&page=1">Plus récents d'abord</a><br>
-            <a href="?action=home&ordre=asc&page=1">Plus anciens d'abord</a>
         <summary class="text-lg dark:text-gray-400 font-bold">Trier par</summary>
         <div class="flex item-center gap-2">
-        <a href="?action=home&ordre=desc" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Plus récents d'abord</a><br>
-        <a href="?action=home&ordre=asc" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Plus anciens d'abord</a>
+        <a href="?action=home&ordre=desc&page=1" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Plus récents d'abord</a><br>
+        <a href="?action=home&ordre=asc&page=1" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Plus anciens d'abord</a>
         </div>
         </details> <br>
         HTML;
