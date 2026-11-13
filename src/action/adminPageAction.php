@@ -28,8 +28,8 @@ class adminPageAction extends Action
         $html .= "<thead class='bg-gray-100 text-xs uppercase tracking-wide text-gray-600 dark:bg-slate-900 dark:text-gray-400'><tr><th class='px-4 py-3 font-semibold'>Username</th><th class='px-4 py-3 font-semibold'>Nombre de touites</th><th class='px-4 py-3 font-semibold text-right'>Nombre de followers</th></tr></thead>";
         $html .= "<tbody class='divide-y divide-gray-200 dark:divide-gray-700 text-gray-700 dark:text-gray-300'>";
         foreach($influenceurs as $influenceur){
-            $html .= "<tr><td>".htmlspecialchars($influenceur['username'])."</td><td>".(int)$influenceur['nbTouites']."</td><td>".(int)$influenceur['nbFollowers']."</td></tr>";
-            $html .= "<tr class='hover:bg-gray-50 dark:hover:bg-slate-900'><td class='px-4 py-3'>".$influenceur['username']."</td><td class='px-4 py-3'>".$influenceur['nbTouites']."</td><td class='px-4 py-3 text-right'>".$influenceur['nbFollowers']."</td></tr>";
+            $html .= "<tr class='hover:bg-gray-50 dark:hover:bg-slate-900'><td class='px-4 py-3'>".htmlspecialchars($influenceur['username'])."</td><td class='px-4 py-3'>".(int)$influenceur['nbTouites']."</td><td class='px-4 py-3 text-right'>".(int)$influenceur['nbFollowers']."</td></tr>";
+
         }
         $html .= "</table></div>";
         $html .= "<br>";
