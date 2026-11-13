@@ -27,7 +27,7 @@ class Touite
 
     }
 
-    public function getImage(): Image
+    public function getImage(): ?Image
     {
         return $this->image;
     }

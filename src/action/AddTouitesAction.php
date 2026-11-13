@@ -56,11 +56,11 @@ class AddTouitesAction extends Action {
 
                 $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $newFileName = uniqid() . "." . $extension;
-                $uploadDir = __DIR__ . '/../../public/uploads/';
-                if(!move_uploaded_file($file['tmp_name'], $uploadDir . $newFileName)){
+
+                if(!move_uploaded_file($file['tmp_name'], "uploads/" . $newFileName)){
                     return "<p>Erreur lors de l'envoie de la photo</p>";
                 }
-                $id_img= $repo->addImg($file["tmp_name"],$newFileName);
+                $id_img= $repo->addImg($file["tmp_name"],"uploads/" .$newFileName);
             }
             //Pour gerer le username
 

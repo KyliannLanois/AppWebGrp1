@@ -63,13 +63,13 @@ class TouiteRepository {
 
 
     public function getAllTouites(): array{
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite, t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img, t.score
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite,t.id_image, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
             ORDER BY t.date_touite DESC";
 
         $stmt =     $this->pdo->query($sql);
@@ -79,13 +79,13 @@ class TouiteRepository {
     }
 
     public function getAllTouitesInverse(): array{
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img, t.score
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite,t.id_image, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
             ORDER BY t.date_touite ASC";
 
         $stmt =     $this->pdo->query($sql);
@@ -282,14 +282,14 @@ class TouiteRepository {
     public function getListTouiteUser(int $iduser): array
     {
 
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
             WHERE t.id_user = :iduser
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite,t.id_image, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
             ORDER BY t.date_touite DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -304,14 +304,14 @@ class TouiteRepository {
     public function getListTouiteUserInverse(int $iduser): array
     {
 
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img
             FROM touite t
             JOIN utilisateur u ON u.id_user = t.id_user
             LEFT JOIN image i ON t.id_image = i.id_image
             WHERE t.id_user = :iduser
-            GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
+            GROUP BY t.id_touite, t.texte_touite, t.date_touite,t.id_image, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img
             ORDER BY t.date_touite ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
@@ -324,7 +324,7 @@ class TouiteRepository {
     }
 
     public function getTouiteAbonnement(int $iduser) : array{
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
             u.id_user, u.username, u.nom_user, u.prenom_user, u.email_user,
             i.chemin_img, t.score
             FROM touite t
@@ -361,15 +361,15 @@ class TouiteRepository {
 
 
 
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
                    u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img FROM touite t
-                INNER JOIN touite_tag tt ON t.id_touite = tt.id_touite
+                INNER JOIN touite_tag tt ON t.id_touite = t.id_touite
                 INNER JOIN tag tag ON tt.id_tag = tag.id_tag
                 INNER JOIN utilisateur u ON t.id_user = u.id_user
                 LEFT JOIN image i ON t.id_image = i.id_image
                 WHERE tag.id_tag = :id_tag
-                GROUP BY t.id_touite, t.texte_touite, t.date_touite, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
+                GROUP BY t.id_touite, t.texte_touite, t.date_touite,t.id_image, u.id_user,u.username, u.nom_user, u.prenom_user, u.email_user, i.chemin_img, t.score
                 ORDER BY t.date_touite DESC";
 
 
@@ -404,12 +404,17 @@ class TouiteRepository {
                 $row['email_user']
             );
 
+            $img = null;
+            if($row['id_image'] !== null){
+                $img = $this->getImg((int)$row['id_image']);
+            }
+
             $touites[] = new Touite(
                 (int)$row['id_touite'],
                 $auteur,
                 $row['date_touite'],
                 $row['texte_touite'],
-                $row['chemin_img'] ?? null,
+                $img,
                 [], // ou null selon ce que tu veux initialiser
                 $row['score'] ?? 0
 
@@ -447,6 +452,10 @@ class TouiteRepository {
         $row = $stmt->fetch();
 
         $user = $this->getUserById((int)$row['id_user']);
+        $img = null;
+        if($row['id_image'] !== null){
+            $img = $this->getImg((int)$row['id_image']);
+        }
 
 
         $touite = new Touite(
@@ -454,7 +463,7 @@ class TouiteRepository {
             $user,
             $row['date_touite'],
             $row['texte_touite'],
-            $row['chemin_img'] ?? null,
+            $img,
             [], // ou null selon ce que tu veux initialiser
         $row['score'] ?? 0
         );
@@ -644,7 +653,7 @@ class TouiteRepository {
         $page = max(1, $page);
         $offset = ($page - 1) * $limit;
 
-        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,
+        $sql = "SELECT t.id_touite, t.texte_touite, t.date_touite,t.id_image,
                    u.id_user, u.nb_touites, u.username, u.nom_user, u.prenom_user, u.email_user,
                    i.chemin_img
             FROM touite t
@@ -694,10 +703,10 @@ class TouiteRepository {
 
     public function addImg(string $description,string $path) : int{
         $sql = "INSERT INTO image (desc_image,chemin_img) 
-            VALUES (:desc_img, :chemin_img)";
+            VALUES (:desc_image, :chemin_img)";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([
-            'desc_img' => $description,
+            'desc_image' => $description,
             'chemin_img' => $path
         ]);
 
@@ -713,6 +722,6 @@ class TouiteRepository {
         $stmt->execute(['id_image' => $id_image]
         );
         $row = $stmt->fetch();
-        return new Image($id_image,$row['desc_img'],$row['chemin_img']);
+        return new Image($id_image,$row['desc_image'],$row['chemin_img']);
     }
 }

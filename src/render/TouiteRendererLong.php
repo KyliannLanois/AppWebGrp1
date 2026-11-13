@@ -22,8 +22,8 @@ class TouiteRendererLong extends TouiteRendererDefault{
         $score = $this->touite->getScore();
         $touiteId = $this->touite->getIdTouite();
 
-        $imgId = $this->touite->getImage();
-        $imglink = $this->repo->getImg($imgId)->getPath();
+        $imgPath = $this->touite->getImage()->getPath();
+
 
        return <<<HTML
     <div class="touiteDetail">
@@ -35,7 +35,7 @@ class TouiteRendererLong extends TouiteRendererDefault{
         </div>
         <div class="touite-content">
             <p>{$this->replaceTagInText($texte)}</p>
-            <img src=$imglink alt="Image du touite">
+            <img src=$imgPath alt="Image du touite">
         </div>
         <div class="touite-footer">
             <a href="?action=dislike&touiteId={$touiteId}" class="dislike-button">Dislike</a>
