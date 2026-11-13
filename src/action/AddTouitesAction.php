@@ -56,9 +56,9 @@ class AddTouitesAction extends Action {
 
                 $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
                 $newFileName = uniqid() . "." . $extension;
-                $uploadDir = __DIR__ . "/../public/uploads/";
+                $uploadDir = __DIR__ . '/../../public/uploads/';
                 if(!move_uploaded_file($file['tmp_name'], $uploadDir . $newFileName)){
-                    return "<p>Erreur lors de l'envoie du photo</p>";
+                    return "<p>Erreur lors de l'envoie de la photo</p>";
                 }
                 $id_img= $repo->addImg($file["tmp_name"],$newFileName);
             }
