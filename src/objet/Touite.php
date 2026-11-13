@@ -9,13 +9,13 @@ class Touite
     private User $auteur;
     private string $date;
     private string $contenu;
-    private ?string $image;
+    private ?Image $image;
 
     private ?array $tags;
 
     private int $score;
 
-    public function __construct(int $id_touite, User $auteur, string $date, string $contenu, ?string $image, ?array $tags,int $score = 0)
+    public function __construct(int $id_touite, User $auteur, string $date, string $contenu, ?Image $image, ?array $tags,int $score = 0)
     {
         $this->id_touite = $id_touite;
         $this->auteur = $auteur;
@@ -27,7 +27,7 @@ class Touite
 
     }
 
-    public function getImage(): string
+    public function getImage(): ?Image
     {
         return $this->image;
     }
