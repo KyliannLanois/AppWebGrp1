@@ -27,7 +27,7 @@ class HomeAction extends Action {
         $touites = $repo->getAllTouites($page, $ordre);
 
         $html = "<section class='touite-action'>";
-        $html .= "<h2 class='text-lg dark:text-gray-400 font-bold'>Derniers touites publiés</h2>";
+        $html .= "<h1 class='text-lg dark:text-gray-400 font-bold'>Derniers touites publiés</h1>";
         $html .= <<<HTML
         <details>
         <summary class="text-lg dark:text-gray-400 font-bold">Trier par</summary>

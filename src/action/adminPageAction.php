@@ -12,7 +12,7 @@ class adminPageAction extends Action
         $repo = TouiteRepository::getInstance();
         $influenceurs = $repo->classementInfluenceurs();
 
-        $html = "<h3>Classement des influenceurs</h3>";
+        $html = "<h1 class='text-lg dark:text-gray-400 font-bold'>Classement des influenceurs</h1>";
         $html .= "<table>";
         $html .= "<tr><th>Username</th><th>Nombre de touites</th><th>Nombre de followers</th></tr>";
         foreach($influenceurs as $influenceur){

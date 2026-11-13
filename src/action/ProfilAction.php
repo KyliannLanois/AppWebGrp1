@@ -17,7 +17,7 @@ class ProfilAction extends Action
 
         $touites = $repo->getListTouiteUser($userId);
 
-        $html = "<h2 class='text-xl dark:text-gray-400 font-bold'>Bienvenue ".$userName."</h2>";
+        $html = "<h1 class='text-xl dark:text-gray-400 font-bold'>Bienvenue ".$userName."</h1>";
         $html .= "<section class='flex flex-col gap-2'>";
         $html .= "<a href='?action=afficherAbonnee' class='text-lg text-blue-500 hover:text-blue-600 border rounded p-2 hover:bg-blue-100 font-bold dark:hover:bg-gray-800'>Afficher la liste de ses abonnées</a>";
         $html .= "<h3 class='text-lg dark:text-gray-400 font-bold'>Voici vos touites :</h3>";
