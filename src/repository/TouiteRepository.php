@@ -557,6 +557,9 @@ class TouiteRepository {
     }
 
     public function abonnerUser(int $idFollower,int $idFollowed) : void{
+        if ($idFollower == $idFollowed) {
+            return;
+        }
         $sql = "SELECT * FROM abonnement_user WHERE id_follower = :idFollower AND id_followed = :idFollowed";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['idFollower' => $idFollower, 'idFollowed' => $idFollowed]);

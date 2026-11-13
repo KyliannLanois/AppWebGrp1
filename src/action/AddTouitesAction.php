@@ -21,11 +21,11 @@ class AddTouitesAction extends Action {
 
 
             if (empty($texte)) {
-                return "<p> Le texte du touite ne peut etre vide</p>";
+                return "<p class='text-sm dark:text-gray-400'> Le texte du touite ne peut etre vide</p>";
             }
 
             if (mb_strlen($texte) > 235) {
-                return "<p> Le texte du touite ne peut etre plus long que 235 caractères</p>";
+                return "<p class='text-sm dark:text-gray-400'> Le texte du touite ne peut etre plus long que 235 caractères</p>";
             }
 
 
@@ -36,13 +36,13 @@ class AddTouitesAction extends Action {
             if(isset($_FILES['img']) && $_FILES['img']['error'] !== UPLOAD_ERR_NO_FILE){
                 $file = $_FILES['img'];
                 if($file['error'] !== UPLOAD_ERR_OK){
-                    return "<p> Erreur dans l'envoie de l'image</p>";
+                    return "<p class='text-sm dark:text-gray-400'> Erreur dans l'envoi de l'image</p>";
                 }
                 $maxSize = 20 * 1024 * 1024;
 
 
                 if($file['size'] > $maxSize) {
-                    return "<p>L'image est trop lourd</p>";
+                    return "<p class='text-sm dark:text-gray-400'>L'image est trop lourde</p>";
                 }
 
 //                $finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -99,19 +99,26 @@ class AddTouitesAction extends Action {
         $safeText = htmlspecialchars($ancientexte);
         return <<< HTML
         <section class="add-touite-section">
-            <h2 class="text-2xl font-bold" >Publier un nouveau touite</h2>
+            <h2 class="text-2xl font-bold dark:text-white" >Publier un nouveau touite</h2>
             <form method="POST" action="?action=add-touite" enctype="multipart/form-data">
                 <div class="flex flex-col border border-gray-200 rounded-md p-4 shadow-lg dark:border-gray-400 dark:shadow-gray-600/50 dark:bg-slate-950">
                     <label for="username" class="text-sm dark:text-gray-400">Rentrer ci-dessous votre pseudo : </label><br>
                     <input type="text" id="username" name="username" maxlength="50" value="{$safeText}" class="px-2 py-1 border-3 border-gray-200 rounded-md dark:text-gray-400 dark:border-gray-600"><br>
                     <label for="texte" class="text-sm dark:text-gray-400">Votre message (235 caractères max, incluez vos #tags) :</label><br>
                     <textarea id="texte" name="texte" rows="4" cols="50" maxlength="235" required class="px-2 py-1 border border-gray-200 shadow-md dark:bg-slate-950 dark:text-gray-400 dark:border-gray-600 dark:placeholder-gray-400 dark:shadow-none"></textarea>
-                    <label for="img">Ajouter une image (max 20 Mo)</label>
-                    <input id="img" type="file" name="img" accept="image/png, image/jpeg, image/jpg, image/webp" ><br>
+                    <div class="flex items-center gap-3 mt-3">
+                    <label for="img" class="inline-flex cursor-pointer items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold
+                  text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-slate-900"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="size-5">
+            <path d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Zm10.5-11.25h.008v.008h-.008V9.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
+        </svg>Ajouter une image <span class="text-gray-500">(max 20 Mo)</span></label>
+         <span id="nom-fichier" class="truncate text-sm text-gray-500">Aucune image choisie</span>
+                    </div>
+                    <input id="img" type="file" name="img" accept="image/png, image/jpeg, image/jpg, image/webp" class="sr-only" onchange="document.getElementById('nom-fichier').textContent = this.files[0]?.name ?? 'Aucune image choisie'"><br>
                 </div>
                 <br>
-                <button type="submit">Touiter</button>
-                <a href="?action=default">Annuler</a>
+                <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-full hover:bg-blue-600">Touiter</button>
+                <a href="?action=default" class="px-4 py-2 text-sm font-medium text-white bg-gray-500 rounded-full hover:bg-gray-600">Annuler</a>
             </form>
         </section>
         HTML;
