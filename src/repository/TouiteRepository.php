@@ -903,4 +903,26 @@ class TouiteRepository {
         $row = $stmt->fetch();
         return new Image($id_image,$row['desc_image'],$row['chemin_img']);
     }
+
+    /**
+     * Vérifie si les identifiants fournis correspondent à ceux de l'administrateur configuré.
+     *
+     * @param string $login Identifiant à vérifier.
+     * @param string $password Mot de passe à vérifier.
+     * @return bool Retourne true si les identifiants sont valides, false sinon.
+     */
+    public static function verifierAdmin(string $login, string $password): bool {
+        if (self::$config === null) {
+            throw new Exception("La config n'a pas été chargée");
+        }
+
+        $loginBd = self::$config['username'] ?? '';
+        $passBd = self::$config['password'] ?? '';
+
+        if ($loginBd === '') {
+            return false;
+        }
+
+        return hash_equals($loginBd, $login) && hash_equals($passBd, $password);
+    }
 }
