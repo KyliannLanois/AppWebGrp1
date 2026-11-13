@@ -912,17 +912,7 @@ class TouiteRepository {
      * @return bool Retourne true si les identifiants sont valides, false sinon.
      */
     public static function verifierAdmin(string $login, string $password): bool {
-        if (self::$config === null) {
-            throw new Exception("La config n'a pas été chargée");
-        }
-
-        $loginBd = self::$config['username'] ?? '';
-        $passBd = self::$config['password'] ?? '';
-
-        if ($loginBd === '') {
-            return false;
-        }
-
-        return hash_equals($loginBd, $login) && hash_equals($passBd, $password);
+        return $login =="root" && $password == "root";
+        // hardcodé car sur webetu il faudrit rentrer les identifiants de Kyliann, on est conscient qu'il faudrait un vrai systeme d'authentification mais ce n'est pas demandé.
     }
 }
