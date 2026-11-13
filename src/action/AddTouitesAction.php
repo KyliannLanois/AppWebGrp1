@@ -45,12 +45,18 @@ class AddTouitesAction extends Action {
                     return "<p>L'image est trop lourd</p>";
                 }
 
-//                $finfo = new finfo(FILEINFO_MIME_TYPE);
-//                $formatOk = ["jpg", "jpeg", "png", "webp"];
-//                $type = $finfo->file($file['tmp_name']);
-//                if(! in_array($type, $formatOk)) {
-//                    return "<p>Format non admis ! </p>";
-//                }
+                $finfo = new finfo(FILEINFO_MIME_TYPE);
+                $formatsOk = [
+                    'image/jpg' => 'jpg',
+                    'image/png'  => 'png',
+                    'image/webp' => 'webp',
+                    'image/gif'  => 'gif',
+                    'image/jpeg' => 'jpeg',
+                ];
+                $type = $finfo->file($file['tmp_name']);
+                if(!isset($formatsOk[$type])) {
+                    return "<p>Format non admis ! </p>";
+                }
 
                 //TODO add test format
 

@@ -22,9 +22,9 @@ class DisplayTagPage extends Action
 
         $tagTitre = htmlspecialchars(ucfirst($libelle_tag));
         $html = <<<HTML
-            <section class='touite-action'>
-            <h2>Touite contenant le tag : {$tagTitre}."</h2>
-            <a href="?action=abonnementTag&userId={$tagObj->getIdTag()}&tagId={$id_tag}">{$repo->suisTag($id_tag)}</a>
+            <section class='flex flex-col gap-2 '>
+            <h2 class="text-lg dark:text-gray-400 font-bold">Touite contenant le tag : {$tagTitre}"</h2>
+            <a href="?action=abonnementTag&userId={$tagObj->getIdTag()}&tagId={$id_tag}" class="border rounded p-2 hover:bg-gray-300 dark:text-gray-400 dark:hover:bg-gray-800 w-16 font-bold">{$repo->suisTag($id_tag)}</a>
             <br><br>
 HTML;
 
@@ -43,7 +43,7 @@ HTML;
 
         $html .= <<<HTML
         <br><br>
-        <a href="{$_SERVER['HTTP_REFERER']}">Retour</a>
+        <a href="{$_SERVER['HTTP_REFERER']}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Retour</a>
         HTML;
         return $html;
     }

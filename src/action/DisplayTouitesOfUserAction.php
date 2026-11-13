@@ -27,13 +27,18 @@ class DisplayTouitesOfUserAction extends Action
 
         $html = <<<HTML
         <section class='touite-action'>
-        <h2>Touites de ".$username."</h2>
-         <a href="?action=abonnementUser&idFollowed={$iduser}">{$repo->estAbonne($iduser)}</a>
+        <div class="flex justify-between">
+        <h2 class="text-lg dark:text-gray-400 font-bold ">Touites de $username</h2>
+         <a href="?action=abonnementUser&idFollowed={$iduser}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">{$repo->estAbonne($iduser)}</a>
+        </div>
+        
         <br><br>
         <details>
-        <summary>Trier par</summary>
-        <a href="?action=DisplayTouiteOfUser&id=$iduser&ordre=desc">Plus récents d'abord</a><br>
-        <a href="?action=DisplayTouiteOfUser&id=$iduser&ordre=asc">Plus anciens d'abord</a>
+        <summary class="text-lg dark:text-gray-400 font-bold">Trier par</summary>
+        <div class="flex item-center gap-2">
+        <a href="?action=DisplayTouiteOfUser&id=$iduser&ordre=desc" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Plus récents d'abord</a><br>
+        <a href="?action=DisplayTouiteOfUser&id=$iduser&ordre=asc" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Plus anciens d'abord</a>
+        </div>
         </details> <br>
         HTML;
 
@@ -50,7 +55,7 @@ class DisplayTouitesOfUserAction extends Action
         $html .= "</section>";
         $html .= <<<HTML
         <br><br>
-        <a href="{$_SERVER['HTTP_REFERER']}">Retour</a>
+        <a href="{$_SERVER['HTTP_REFERER']}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Retour</a>
         HTML;
         return $html;
     }
