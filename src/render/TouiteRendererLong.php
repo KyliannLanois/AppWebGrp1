@@ -23,7 +23,7 @@ class TouiteRendererLong extends TouiteRendererDefault{
         $date = $this->touite->getDate();
         $score = $this->touite->getScore();
         $touiteId = $this->touite->getIdTouite();
-
+        $iduser = $auteurObj->getIdUser();
         $imgPath = $this->touite->getImage()->getPath();
 
 
@@ -32,8 +32,8 @@ class TouiteRendererLong extends TouiteRendererDefault{
         <div class="touite-header">
           
             <div class="user-info">
-                <a href="?action=DisplayTouiteOfUser&id={$idUser}" class="text-sm dark:text-gray-400 font-semibold text-xl mr-5 before:content-['@'] hover:underline hover:font-bold hover:text-blue-500">{$auteur}</a>
-                <a href="?action=abonnementUser&idFollowed={$auteurObj->getIdUser()}&touiteId={$touiteId}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">{$repo->estAbonne($idUser)}</a>
+                <a href="?action=DisplayTouiteOfUser&id={$iduser}" class="text-sm dark:text-gray-400 font-semibold text-xl mr-5 before:content-['@'] hover:underline hover:font-bold hover:text-blue-500">{$auteur}</a>
+                <a href="?action=abonnementUser&idFollowed={$iduser}&touiteId={$touiteId}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">{$this->repo->estAbonne($iduser)}</a>
             </div>
         </div>
         <div class="bg-gray-200 dark:bg-slate-900 rounded-lg p-4 m-3 dark:text-gray-400">
@@ -56,7 +56,8 @@ class TouiteRendererLong extends TouiteRendererDefault{
 
     </div>
     HTML;
-}
+       }
+
 
     public function renderCompact(): string
     {

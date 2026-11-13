@@ -42,10 +42,7 @@ class Touite
         return $this->date;
     }
 
-    public function getIdUser(): int
-    {
-        return $this->id_user;
-    }
+
 
     public function getIdTouite(): int
     {
