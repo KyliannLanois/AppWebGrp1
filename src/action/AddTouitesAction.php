@@ -57,7 +57,7 @@ class AddTouitesAction extends Action {
         $safeText = htmlspecialchars($ancientexte);
         return <<< HTML
         <section class="add-touite-section">
-            <h2 class="text-2xl font-bold" >Publier un nouveau touite</h2>
+            <h2 class="text-2xl font-bold dark:text-white" >Publier un nouveau touite</h2>
             <form method="POST" action="?action=add-touite">
                 <div class="flex flex-col border border-gray-200 rounded-md p-4 shadow-lg dark:border-gray-400 dark:shadow-gray-600/50 dark:bg-slate-950">
                     <label for="username" class="text-sm dark:text-gray-400">Rentrer ci-dessous votre pseudo : </label><br>
