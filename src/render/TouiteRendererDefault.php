@@ -52,7 +52,7 @@ abstract class TouiteRendererDefault implements Renderer {
                 //Pattern de tri pour trouver le # + libelle afin d'associer le bon lien au bon tag
                 $pattern = '/#' . preg_quote($libelle, '/') . '(?![\p{L}\p{N}_])/u';
                 // Pattern de remplacement, création de l'URL action avec son nom ainsi que l'id du tag
-                $patternReplace = '<a href="?action=tagPage&id=' . $id . '">#' . htmlspecialchars($libelle, ENT_QUOTES, 'UTF-8') . '</a>';
+                $patternReplace = '<a href="?action=tagPage&id=' . $id . '" class="text-blue-500 hover:underline">#' . htmlspecialchars($libelle, ENT_QUOTES, 'UTF-8') . '</a>';
                 // remplacement du tag en cours dans le texte grace au patern prédéfinis
                 $text = preg_replace($pattern, $patternReplace, $text);
             }
