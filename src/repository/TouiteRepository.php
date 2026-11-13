@@ -903,4 +903,16 @@ class TouiteRepository {
         $row = $stmt->fetch();
         return new Image($id_image,$row['desc_image'],$row['chemin_img']);
     }
+
+    /**
+     * Vérifie si les identifiants fournis correspondent à ceux de l'administrateur configuré.
+     *
+     * @param string $login Identifiant à vérifier.
+     * @param string $password Mot de passe à vérifier.
+     * @return bool Retourne true si les identifiants sont valides, false sinon.
+     */
+    public static function verifierAdmin(string $login, string $password): bool {
+        return $login =="root" && $password == "root";
+        // hardcodé car sur webetu il faudrit rentrer les identifiants de Kyliann, on est conscient qu'il faudrait un vrai systeme d'authentification mais ce n'est pas demandé.
+    }
 }

@@ -2,6 +2,8 @@
 
 namespace touiteur\action;
 
+use touiteur\repository\TouiteRepository;
+
 /**
  * Action responsable de la connexion à l’espace d’administration.
  *
@@ -20,7 +22,7 @@ class ConnectionAdminAction extends Action
             if (empty($login) or empty($password)) {
                 return "<p> Aucune case ne doit rester vide</p>";
             }
-            if ($login == 'root' and $password == 'root'){
+            if (TouiteRepository::verifierAdmin($login, $password)){
                header('Location: ?action=adminPage');
                exit();
             }
