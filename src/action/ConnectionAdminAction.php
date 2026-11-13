@@ -22,9 +22,13 @@ class ConnectionAdminAction extends Action
             if (empty($login) or empty($password)) {
                 return "<p> Aucune case ne doit rester vide</p>";
             }
-            if (TouiteRepository::verifierAdmin($login, $password)){
-               header('Location: ?action=adminPage');
-               exit();
+            if ($login == 'root' and $password == 'root'){
+                // hardcodé car sur webetu il faudrit rentrer les identifiants de Kyliann, on est conscient qu'il faudrait un vrai systeme d'authentification mais ce n'est pas demandé.
+
+                session_regenerate_id(true);
+                $_SESSION['admin'] = true;
+                header('Location: ?action=adminPage');
+                exit();
             }
 
             return "<p> Le login et le mot de passe sont incorrects</p>";
