@@ -1,17 +1,6 @@
-Rendu SAE « Développer une application web sécurisée »
+SAE « Développer une application web sécurisée »
 
 Charles-Eli Pernin, Kyliann Lanois, Thibaud Auchet, Quentin Leger 
-
-Partie « Développement Web »
-
-
-
-Données importantes à connaître : 
-
-Le bouton pour se connecter à la page admin est tout en bas à gauche, les identifiants sont “root” “root”.
-Certains boutons sont désactivés tant que l’on est pas connecté.
-Se connecter sert à poster un touite plus vite pour ne pas avoir à écrire à nouveau le pseudo mais il permet aussi de simuler une authentification pour bénéficier des fonctionnalités liées aux abonnements, page personnalisée, like… 
-
 
 Tableaux des fonctionnalités réalisées et les contributions.
 
