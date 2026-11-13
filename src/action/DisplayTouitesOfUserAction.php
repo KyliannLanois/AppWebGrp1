@@ -28,7 +28,7 @@ class DisplayTouitesOfUserAction extends Action
         $html = <<<HTML
         <section class='touite-action'>
         <div class="flex justify-between">
-        <h2 class="text-lg dark:text-gray-400 font-bold ">Touites de $username</h2>
+        <h2 class="text-lg dark:text-gray-400 font-bold ">Touites de ".$username."</h2>
          <a href="?action=abonnementUser&idFollowed={$iduser}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">{$repo->estAbonne($iduser)}</a>
         </div>
         
@@ -55,7 +55,7 @@ class DisplayTouitesOfUserAction extends Action
         $html .= "</section>";
         $html .= <<<HTML
         <br><br>
-        <a href="{$_SERVER['HTTP_REFERER']}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Retour</a>
+        <a href="{$_SERVER['HTTP_REFERER']}">Retour</a>
         HTML;
         return $html;
     }

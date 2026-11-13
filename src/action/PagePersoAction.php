@@ -19,19 +19,18 @@ class PagePersoAction extends Action
             $page = 1;
         }
 
-        $limit = 20;
         $totalTouites = $repo->countTouitesAbonnement($userId);
-        $totalPages = max(1, (int)ceil($totalTouites / $limit));
+        $totalPages = max(1, (int)ceil($totalTouites / TouiteRepository::LIMITE));
 
         if ($page > $totalPages) {
             $page = $totalPages;
         }
-        $touites = $repo->getTouiteAbonnemenPage($userId,$page,$limit);
+        $touites = $repo->getTouiteAbonnement($userId, $page);
 
         $html = <<<HTML
-        <div>
-            <h3>Votre page personnalisée</h3>
-            <a href="?action=profil">Accedez à votre profil</a><br><br
+        <div class="flex flex-col gap-2">
+            <h3 class="text-lg dark:text-gray-400 font-bold ">Votre page personnalisée</h3>
+            <a href="?action=profil" class="border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700 text-center font-bold dark:text-gray-400">Accedez à votre profil</a><br><br>
         </div>
 HTML;
 

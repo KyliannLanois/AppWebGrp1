@@ -43,7 +43,7 @@ HTML;
 
         $html .= <<<HTML
         <br><br>
-        <a href="{$_SERVER['HTTP_REFERER']}" class="text-sm dark:text-gray-400 font-semibold border rounded p-2 hover:bg-gray-300 dark:hover:bg-gray-700">Retour</a>
+        <a href="{$_SERVER['HTTP_REFERER']}">Retour</a>
         HTML;
         return $html;
     }

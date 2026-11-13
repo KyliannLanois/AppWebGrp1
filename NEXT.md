@@ -65,7 +65,7 @@ touite des personnes suivies, ainsi que les tag suivis aussi affiché par ordre 
 [ X ] 14 - Influenceurs : afficher listes des plus influents : donc ceux les plus suivis liste affiché ordre croissant nbr de followers
 
 
-3 - Paginer la liste des touites : si le nombre de touites dans la liste est trop important,
+[ X ] 3 - Paginer la liste des touites : si le nombre de touites dans la liste est trop important,
 permettre à la liste des touites de s’afficher par morceau. Les utilisateurs peuvent passer
 d’une page à la suivante et revenir en arrière.
 
@@ -73,8 +73,10 @@ d’une page à la suivante et revenir en arrière.
 d’un touite qu’il consulte. L’utilisateur ne peut évaluer un même touite qu’une seule fois.
 
 
-12L’utilisateur narcissique : un utilisateur peut afficher les noms des utilisateurs qui le
+[ X ] 12L’utilisateur narcissique : un utilisateur peut afficher les noms des utilisateurs qui le
 suivent, ainsi que le score moyen de ses touites.
+
+
 
 [ pas a moi] 13 Associer une image à un touite : On peut ajouter une image lorsqu’on rédige un
 nouveau touite. L’auteur du touite peut dans ce cas choisir un fichier image qui sera
@@ -82,8 +84,6 @@ transféré au serveur. L’image sera affichée avec le touite quand celui-ci e
 détail (pas dans une liste)
 
 
-15 Les tendances : afficher la liste des tags les plus mentionnés, avec le nombre de fois
-où ils sont mentionnés, la liste est ordonnée par ordre croissant.
 
-16 Le back-office : une application indépendante de touiteur.app qui permet aux
-    administrateurs de réaliser les deux fonctionnalités précédentes.
+[ X ] 15 Les tendances : afficher la liste des tags les plus mentionnés, avec le nombre de fois
+où ils sont mentionnés, la liste est ordonnée par ordre croissant.
